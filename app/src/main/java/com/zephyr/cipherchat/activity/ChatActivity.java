@@ -3,6 +3,7 @@ package com.zephyr.cipherchat.activity;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,7 +75,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void instantiateWebSocket() {
         OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder().url(AppConfig.URL_WEBSOCKETS_CHAT).build();
+        Request request = new Request.Builder().url(AppConfig.CHAT_WEBSOCKETS).build();
         SocketListener socketListener = new SocketListener(this);
         webSocket = client.newWebSocket(request, socketListener);
     }
@@ -149,12 +150,12 @@ public class ChatActivity extends AppCompatActivity {
 
         @Override
         public Object getItem(int i) {
-            return messageList.get(1);
+            return messageList.get(i);
         }
 
         @Override
         public long getItemId(int i) {
-            return 1;
+            return i;
         }
 
         @Override
@@ -166,10 +167,11 @@ public class ChatActivity extends AppCompatActivity {
             TextView sentMessage = view.findViewById(R.id.sentMsg);
             TextView receivedMessage = view.findViewById(R.id.receivedMsg);
 
-            JSONObject item = messageList.get(1);
+            JSONObject item = messageList.get(i);
 
             try {
                 if (item.getBoolean("byServer")) {
+                    receivedMessage.setVisibility(View.VISIBLE);
                     receivedMessage.setText(item.getString("message"));
                     sentMessage.setVisibility(View.INVISIBLE);
                 } else {

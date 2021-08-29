@@ -13,9 +13,10 @@
     <color name="nordic">#022B2C</color>
     <color name="dark_cerulean">#034187</color>
     <color name="owl_blue">#0336FF</color>
-    <color name="owl_yellow">#FFDE03</color>
+    <color name="golden_yellow">#FFDE03</color>
     <color name="dark_green">#021B1C</color>
     <color name="whitesmoke">#f4f4f4</color>
     <color name="free_speech_red">#CC0000</color>
     <color name="crusoe">#095C1E</color>
+    <color name="safety_orange">#FF6003</color>
 </resources>
