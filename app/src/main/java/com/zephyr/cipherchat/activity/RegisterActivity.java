@@ -25,7 +25,6 @@ import com.zephyr.cipherchat.helper.SessionManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
