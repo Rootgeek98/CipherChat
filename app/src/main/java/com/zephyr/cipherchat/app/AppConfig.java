@@ -16,6 +16,6 @@ public class AppConfig {
 
     public static final String URL_REGISTER = "http://192.168.0.28/cipher_chat/app/register.php"; // Register URL
 
-    public static final String URL_CHAT = "ws://192.168.0.28"; // Chat URL
+    public static final String URL_WEBSOCKETS_CHAT = "ws://192.168.0.28"; // WebSockets Chat URL
 
 }
