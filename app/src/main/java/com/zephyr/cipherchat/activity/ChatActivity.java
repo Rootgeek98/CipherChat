@@ -74,7 +74,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void instantiateWebSocket() {
         OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder().url(AppConfig.URL_CHAT).build();
+        Request request = new Request.Builder().url(AppConfig.URL_WEBSOCKETS_CHAT).build();
         SocketListener socketListener = new SocketListener(this);
         webSocket = client.newWebSocket(request, socketListener);
     }
