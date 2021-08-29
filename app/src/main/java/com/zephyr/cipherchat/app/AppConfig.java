@@ -16,4 +16,6 @@ public class AppConfig {
 
     public static final String URL_REGISTER = "http://192.168.0.28/cipher_chat/app/register.php"; // Register URL
 
+    public static final String URL_CHAT = "http://192.168.0.28/cipher_chat/app/chat.php"; // Chat URL
+
 }
