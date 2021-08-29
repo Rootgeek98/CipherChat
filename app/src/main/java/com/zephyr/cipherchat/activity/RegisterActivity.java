@@ -25,10 +25,7 @@ import com.zephyr.cipherchat.helper.SessionManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-<<<<<<< HEAD
-=======
 import java.util.Arrays;
->>>>>>> 595cf4835a2e1c174bd7f05103889774b7c3950e
 import java.util.HashMap;
 import java.util.Map;
 
@@ -114,14 +111,10 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),
                             empty_details, Toast.LENGTH_LONG)
                             .show();
-<<<<<<< HEAD
                 } else if (password.length() < 8){
                     Toast.makeText(getApplicationContext(),
                             short_password, Toast.LENGTH_LONG)
                             .show();
-                }else {
-                    registerUser(firstname, lastname, username, phone_number, password);
-=======
                 }else {
                     if (password.length() < 8 || confirm_password.length() < 8) {
                         Toast.makeText(getApplicationContext(),
@@ -141,7 +134,6 @@ public class RegisterActivity extends AppCompatActivity {
 
                         }
                     }
->>>>>>> 595cf4835a2e1c174bd7f05103889774b7c3950e
                 }
             }
         });
