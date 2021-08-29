@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zephyr.cipherchat.R;
+import com.zephyr.cipherchat.app.AppConfig;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -73,7 +74,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void instantiateWebSocket() {
         OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder().url("").build();
+        Request request = new Request.Builder().url(AppConfig.URL_CHAT).build();
         SocketListener socketListener = new SocketListener(this);
         webSocket = client.newWebSocket(request, socketListener);
     }
