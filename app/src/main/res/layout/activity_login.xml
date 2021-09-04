@@ -8,6 +8,7 @@
 
     <EditText
         android:id="@+id/etUsername"
+        android:fontFamily="@font/poppinsmedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -24,8 +25,11 @@
 
     <TextView
         android:id="@+id/tvLogin"
+        android:fontFamily="@font/poppinsmedium"
+        android:textColor="#02696C"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="25sp"
         android:layout_marginTop="32dp"
         android:layout_marginBottom="8dp"
         android:text="@string/login"
@@ -37,6 +41,7 @@
 
     <EditText
         android:id="@+id/etPassword"
+        android:fontFamily="@font/poppinsmedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -54,9 +59,11 @@
 
     <Button
         android:id="@+id/btnLogin"
+        android:fontFamily="@font/poppinsmedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:backgroundTint="@color/blue_lagoon"
         android:layout_marginBottom="8dp"
         android:text="@string/login"
         app:layout_constraintBottom_toTopOf="@+id/tvRegister"
@@ -67,6 +74,9 @@
 
     <TextView
         android:id="@+id/tvRegister"
+        android:fontFamily="@font/poppinsmedium"
+        android:textSize="18sp"
+        android:textColor="#022B2C"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"

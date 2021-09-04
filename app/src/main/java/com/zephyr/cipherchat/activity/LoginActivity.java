@@ -17,7 +17,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.zephyr.cipherchat.R;
-import com.zephyr.cipherchat.app.AppConfig;
+import com.zephyr.cipherchat.app.Config;
 import com.zephyr.cipherchat.app.AppController;
 import com.zephyr.cipherchat.helper.SQLiteHandler;
 import com.zephyr.cipherchat.helper.SessionManager;
@@ -126,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
         showDialog();
 
         StringRequest strReq = new StringRequest(Request.Method.POST,
-                AppConfig.URL_LOGIN, new Response.Listener<String>() {
+                Config.URL_LOGIN, new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {

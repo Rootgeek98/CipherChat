@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1064738895231",
+    "project_id": "cipherchat-db6e8",
+    "storage_bucket": "cipherchat-db6e8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1064738895231:android:0a4b443b41c19f9d88d64a",
+        "android_client_info": {
+          "package_name": "com.zephyr.cipherchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1064738895231-bgh4co8km30pvg7t8ho0ikocdec5fc0n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxNEMXWVnijobaoiX27KcSrW7qyHYu0NY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1064738895231-bgh4co8km30pvg7t8ho0ikocdec5fc0n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

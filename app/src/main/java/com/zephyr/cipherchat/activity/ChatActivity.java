@@ -3,7 +3,6 @@ package com.zephyr.cipherchat.activity;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zephyr.cipherchat.R;
-import com.zephyr.cipherchat.app.AppConfig;
+import com.zephyr.cipherchat.app.Config;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,7 +27,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
-import okio.ByteString;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -75,7 +73,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void instantiateWebSocket() {
         OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder().url(AppConfig.CHAT_WEBSOCKETS).build();
+        Request request = new Request.Builder().url(Config.CHAT_WEBSOCKETS).build();
         SocketListener socketListener = new SocketListener(this);
         webSocket = client.newWebSocket(request, socketListener);
     }

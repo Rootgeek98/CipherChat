@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `cipher_chat`
+-- Database: `id17520261_cipher_chat`
 --
 
 -- --------------------------------------------------------
@@ -43,9 +43,7 @@ CREATE TABLE `chat` (
 
 CREATE TABLE `rooms` (
   `urid` varchar(23) NOT NULL,
-  `room_name` varchar(15) NOT NULL,
-  `phone_number` varchar(13) NOT NULL,
-  `link` longtext NOT NULL
+  `room_name` varchar(15) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -60,6 +58,7 @@ CREATE TABLE `users` (
   `lastname` varchar(15) NOT NULL,
   `username` varchar(15) NOT NULL,
   `encrypted_password` longtext NOT NULL,
+  `gcm_registration_id` text NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -79,9 +78,7 @@ ALTER TABLE `chat`
 -- Indexes for table `rooms`
 --
 ALTER TABLE `rooms`
-  ADD PRIMARY KEY (`urid`),
-  ADD UNIQUE KEY `room_name` (`room_name`),
-  ADD KEY `phone_number` (`phone_number`);
+  ADD PRIMARY KEY (`urid`);
 
 --
 -- Indexes for table `users`
@@ -101,13 +98,6 @@ ALTER TABLE `chat`
   ADD CONSTRAINT `chat_ibfk_1` FOREIGN KEY (`phone_number`) REFERENCES `users` (`phone_number`),
   ADD CONSTRAINT `chat_ibfk_2` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`urid`);
 
---
--- Constraints for table `rooms`
---
-ALTER TABLE `rooms`
-  ADD CONSTRAINT `rooms_ibfk_1` FOREIGN KEY (`phone_number`) REFERENCES `users` (`phone_number`),
-  ADD CONSTRAINT `rooms_ibfk_2` FOREIGN KEY (`phone_number`) REFERENCES `users` (`phone_number`);
-COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

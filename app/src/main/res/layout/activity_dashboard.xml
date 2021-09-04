@@ -8,12 +8,13 @@
 
     <Button
         android:id="@+id/chatBtn"
+        android:fontFamily="@font/poppinsmedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Chats"
-        android:backgroundTint="@color/owl_blue"
+        android:backgroundTint="@color/nordic"
         android:textColor="@color/white"
-        android:textSize="17sp"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
