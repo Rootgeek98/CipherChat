@@ -1,0 +1,47 @@
+Microsoft Windows [Version 10.0.19043.1165]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\Cipha\AndroidStudioProjects\CipherChat>gradlew signingReport
+
+Welcome to Gradle 7.0.2!
+
+Here are the highlights of this release:
+ - File system watching enabled by default
+ - Support for running with and building Java 16 projects
+ - Native support for Apple Silicon processors
+ - Dependency catalog feature preview
+
+For more details see https://docs.gradle.org/7.0.2/release-notes.html
+
+Starting a Gradle Daemon, 1 incompatible Daemon could not be reused, use --status for details
+
+> Task :app:signingReport
+Variant: debug
+Config: debug
+Store: C:\Users\Cipha\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: ED:2E:88:89:EE:95:09:2A:EB:45:33:73:87:6B:DB:07
+SHA1: DD:13:BD:73:4A:5A:C1:10:54:99:42:58:E9:60:87:DC:2D:87:29:27
+SHA-256: 10:B7:7B:26:DF:5A:CD:2D:7A:09:F8:0D:8B:0C:A9:A3:55:B0:2F:E6:5E:7A:DD:50:ED:9F:0D:08:6F:3C:54:9B
+Valid until: Wednesday, August 9, 2051
+----------
+Variant: release
+Config: none
+----------
+Variant: debugAndroidTest
+Config: debug
+Store: C:\Users\Cipha\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: ED:2E:88:89:EE:95:09:2A:EB:45:33:73:87:6B:DB:07
+SHA1: DD:13:BD:73:4A:5A:C1:10:54:99:42:58:E9:60:87:DC:2D:87:29:27
+SHA-256: 10:B7:7B:26:DF:5A:CD:2D:7A:09:F8:0D:8B:0C:A9:A3:55:B0:2F:E6:5E:7A:DD:50:ED:9F:0D:08:6F:3C:54:9B
+Valid until: Wednesday, August 9, 2051
+----------
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 8.0.
+Use '--warning-mode all' to show the individual deprecation warnings.
+See https://docs.gradle.org/7.0.2/userguide/command_line_interface.html#sec:command_line_warnings
+
+BUILD SUCCESSFUL in 11s
+1 actionable task: 1 executed
+C:\Users\Cipha\AndroidStudioProjects\CipherChat>

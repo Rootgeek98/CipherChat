@@ -5,8 +5,9 @@
       <map>
         <entry key="..\:/Users/Cipha/AndroidStudioProjects/CipherChat/app/src/main/res/drawable/ic_stat_ic_notification.xml" value="0.2" />
         <entry key="..\:/Users/Cipha/AndroidStudioProjects/CipherChat/app/src/main/res/drawable/ic_stat_ic_notification_foreground.xml" value="0.2" />
-        <entry key="..\:/Users/Cipha/AndroidStudioProjects/CipherChat/app/src/main/res/layout/activity_main.xml" value="0.13903985507246377" />
+        <entry key="..\:/Users/Cipha/AndroidStudioProjects/CipherChat/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/Users/Cipha/AndroidStudioProjects/CipherChat/app/src/main/res/layout/activity_register.xml" value="0.13903985507246377" />
+        <entry key="..\:/Users/Cipha/AndroidStudioProjects/CipherChat/app/src/main/res/layout/message_list_item.xml" value="0.1" />
       </map>
     </option>
   </component>

@@ -3,11 +3,14 @@ package com.zephyr.cipherchat.activity;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -33,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvtLastname;
     private TextView tvUsername;
     private TextView tvPhoneNumber;*/
+    private Button buttonSubscribe;
     private Button btnLogout;
     private Button btnDashboard;
 
@@ -55,6 +59,18 @@ public class MainActivity extends AppCompatActivity {
         btnLogout = findViewById(R.id.btnLogout);
         btnDashboard = findViewById(R.id.btnDashboard);
 
+        buttonSubscribe = (Button)findViewById(R.id.button_subscribe);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create channel to show notifications.
+            String channelId  = getString(R.string.default_notification_channel_id);
+            String channelName = "Fcm notifications";
+            NotificationManager notificationManager =
+                    getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(new NotificationChannel(channelId,
+                    channelName, NotificationManager.IMPORTANCE_DEFAULT));
+        }
+
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -63,7 +79,8 @@ public class MainActivity extends AppCompatActivity {
                 if (intent.getAction().equals(Config.REGISTRATION_COMPLETE)) {
                     // gcm successfully registered
                     // now subscribe to `global` topic to receive app wide notifications
-                    FirebaseMessaging.getInstance().subscribeToTopic(Config.TOPIC_GLOBAL);
+                    //FirebaseMessaging.getInstance().subscribeToTopic(Config.TOPIC_GLOBAL);
+                    //Toast.makeText(MainActivity.this, ""+token, Toast.LENGTH_SHORT).show();
 
                     displayFirebaseRegId();
 
@@ -79,7 +96,12 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        displayFirebaseRegId();
+        buttonSubscribe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) { // Subscribe User To Topic
+                FirebaseMessaging.getInstance().subscribeToTopic(Config.TOPIC_GLOBAL);
+            }
+        });
 
         // SqLite database handler
         sqLiteHandler = new SQLiteHandler(getApplicationContext());
@@ -124,6 +146,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        displayFirebaseRegId();
+
+    }
+
+    /**
+     * Fetches reg id from shared preferences
+     * and displays on the screen
+     */
+    private void displayFirebaseRegId() {
+        SharedPreferences pref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, 0);
+        String regId = pref.getString("regId", null);
+
+        Log.e(TAG, "Firebase reg id: " + regId);
+
+        if (!TextUtils.isEmpty(regId)) {
+            txtRegId.setText("Firebase Reg Id: " + regId);
+            Toast.makeText(MainActivity.this, "" + regId, Toast.LENGTH_SHORT).show();
+        } else {
+            txtRegId.setText("Firebase Reg Id is not received yet!");
+        }
     }
 
     /**
@@ -140,22 +182,6 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
-    // Fetches reg id from shared preferences
-    // and displays on the screen
-    private void displayFirebaseRegId() {
-        SharedPreferences pref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, 0);
-        String regId = pref.getString("regId", null);
-
-        Log.e(TAG, "Firebase reg id: " + regId);
-
-        if (!TextUtils.isEmpty(regId))
-            txtRegId.setText("Firebase Reg Id: " + regId);
-        else
-            txtRegId.setText("Firebase Reg Id is not received yet!");
-    }
-
-
 
     @Override
     protected void onResume() {

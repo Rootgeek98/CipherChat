@@ -37,6 +37,15 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true" />
 
+        <Button
+            android:id="@+id/button_subscribe"
+            android:layout_width="200dp"
+            android:layout_height="60dp"
+            android:backgroundTint="@color/blue_lagoon"
+            android:textColor="#ffffff"
+            android:textSize="15sp"
+            android:text="Subscribe to Topic" />
+
         <!-- Dashboard Button -->
 
         <Button

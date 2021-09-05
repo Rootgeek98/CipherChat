@@ -2,9 +2,13 @@ package com.zephyr.cipherchat.service;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -16,11 +20,42 @@ import com.zephyr.cipherchat.utils.NotificationUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
-    private static final String TAG = MyFirebaseMessagingService.class.getSimpleName();
+public class CustomMessagingService extends FirebaseMessagingService {
+
+    private static final String TAG = CustomMessagingService.class.getSimpleName();
 
     private NotificationUtils notificationUtils;
+
+    @Override
+    public void onNewToken(@NonNull String s) {
+        super.onNewToken(s);
+
+        String refreshedToken = s;
+
+        // Saving reg id to shared preferences
+        storeRegIdInPref(refreshedToken);
+
+        // sending reg id to your server
+        sendRegistrationToServer(refreshedToken);
+
+        // Notify UI that registration has completed, so the progress indicator can be hidden.
+        Intent registrationComplete = new Intent(Config.REGISTRATION_COMPLETE);
+        registrationComplete.putExtra("token", refreshedToken);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
+    }
+
+    private void sendRegistrationToServer(final String token) {
+        // sending gcm token to server
+        Log.e(TAG, "sendRegistrationToServer: " + token);
+    }
+
+    private void storeRegIdInPref(String token) {
+        SharedPreferences pref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, 0);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("regId", token);
+        editor.commit();
+    }
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -69,11 +104,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         try {
             JSONObject data = json.getJSONObject("data");
 
-            String title = data.getString("title");
-            String message = data.getString("message");
-            boolean isBackground = data.getBoolean("is_background");
-            String imageUrl = data.getString("image");
-            String timestamp = data.getString("timestamp");
+            String title = (String) data.get("title");
+            String message = (String) data.get("message");
+            boolean isBackground = (boolean) data.get("is_background");
+            String imageUrl = (String) data.get("image");
+            String timestamp = (String) data.get("timestamp");
             JSONObject payload = data.getJSONObject("payload");
 
             Log.e(TAG, "title: " + title);
@@ -95,6 +130,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 notificationUtils.playNotificationSound();
             } else {
                 // app is in background, show the notification in notification tray
+                Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
+                pushNotification.putExtra("message", message);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
                 Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
                 resultIntent.putExtra("message", message);
 
@@ -114,18 +152,42 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     /**
-     * Showing notification with text only
+     * Shows notification with text only
+     *
+     * @param context
+     * @param title
+     * @param message
+     * @param timeStamp
+     * @param intent
      */
-    private void showNotificationMessage(Context context, String title, String message, String timeStamp, Intent intent) {
+    private void showNotificationMessage(
+            Context context,
+            String title,
+            String message,
+            String timeStamp,
+            Intent intent) {
         notificationUtils = new NotificationUtils(context);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         notificationUtils.showNotificationMessage(title, message, timeStamp, intent);
     }
 
     /**
-     * Showing notification with text and image
+     * Shows notification with text and image
+     *
+     * @param context
+     * @param title
+     * @param message
+     * @param timeStamp
+     * @param intent
+     * @param imageUrl
      */
-    private void showNotificationMessageWithBigImage(Context context, String title, String message, String timeStamp, Intent intent, String imageUrl) {
+    private void showNotificationMessageWithBigImage(
+            Context context,
+            String title,
+            String message,
+            String timeStamp,
+            Intent intent,
+            String imageUrl) {
         notificationUtils = new NotificationUtils(context);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         notificationUtils.showNotificationMessage(title, message, timeStamp, intent, imageUrl);
