@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:layout_gravity="center"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".activity.LoginActivity"
+    tools:showIn="@layout/activity_login">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:fontFamily="@font/poppinsmedium"
+            android:text="@string/login"
+            android:textColor="#02696C"
+            android:textSize="25sp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/etUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:fontFamily="@font/poppinsmedium"
+                android:hint="Username"
+                android:inputType="textPersonName" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:fontFamily="@font/poppinsmedium"
+                android:hint="Password"
+                android:inputType="textPassword" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:backgroundTint="@color/blue_lagoon"
+            android:fontFamily="@font/poppinsmedium"
+            android:text="@string/login" />
+
+        <TextView
+            android:id="@+id/tvRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:clickable="true"
+            android:fontFamily="@font/poppinsmedium"
+            android:text="@string/don_t_have_an_account"
+            android:textColor="#022B2C"
+            android:textSize="18sp"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_marginBottom="10dp"
+        android:indeterminateTint="@color/blue_lagoon"
+        android:indeterminateTintMode="src_atop"
+        android:visibility="gone" />
+
+</RelativeLayout>

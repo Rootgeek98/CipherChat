@@ -9,13 +9,29 @@ import android.widget.Toast;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.zephyr.cipherchat.app.AppController;
 import com.zephyr.cipherchat.app.Config;
+import com.zephyr.cipherchat.app.EndPoints;
+import com.zephyr.cipherchat.model.User;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MyIntentService extends IntentService {
 
     private static final String TAG = MyIntentService.class.getSimpleName();
+
+    private String token;
 
     public MyIntentService() {
         super(TAG);
@@ -46,11 +62,10 @@ public class MyIntentService extends IntentService {
     }
 
     /**
-     * Registering with GCM and obtaining the gcm registration id
+     * Registering with FCM and obtaining the gcm registration id
      */
     private void registerFCM() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String token = null;
 
         try {
             token = FirebaseInstanceId.getInstance().getToken();
@@ -73,9 +88,65 @@ public class MyIntentService extends IntentService {
     }
 
     private void sendRegistrationToServer(final String token) {
-        // Send the registration token to our server
-        // to keep it in MySQL
 
+        // checking for valid login session
+        User user = AppController.getInstance().getPrefManager().getUser();
+        if (user == null) {
+            // TODO
+            // user not found, redirecting him to login screen
+            return;
+        }
+
+        String endPoint = EndPoints.USER.replace("_PHONE_NUMBER_", user.getPhone_number());
+
+        Log.e(TAG, "endpoint: " + endPoint);
+
+        StringRequest strReq = new StringRequest(Request.Method.PUT,
+                endPoint, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.e(TAG, "response: " + response);
+
+                try {
+                    JSONObject obj = new JSONObject(response);
+
+                    // check for error
+                    if (obj.getBoolean("error") == false) {
+                        // broadcasting token sent to server
+                        Intent registrationComplete = new Intent(Config.SENT_TOKEN_TO_SERVER);
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(registrationComplete);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Unable to send gcm registration id to our sever. " + obj.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+                    }
+
+                } catch (JSONException e) {
+                    Log.e(TAG, "json parsing error: " + e.getMessage());
+                    Toast.makeText(getApplicationContext(), "Json parse error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                NetworkResponse networkResponse = error.networkResponse;
+                Log.e(TAG, "Volley error: " + error.getMessage() + ", code: " + networkResponse);
+                Toast.makeText(getApplicationContext(), "Volley error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("gcm_registration_id", token);
+
+                Log.e(TAG, "params: " + params.toString());
+                return params;
+            }
+        };
+
+        //Adding request to request queue
+        AppController.getInstance().addToRequestQueue(strReq);
     }
 
     public void subscribeToTopic(String topic) {
@@ -87,7 +158,7 @@ public class MyIntentService extends IntentService {
                 FirebaseMessaging.getInstance().subscribeToTopic("/topics/" + topic);
                 Log.e(TAG, "Subscribed to topic: " + topic);
             } else {
-                Log.e(TAG, "error: gcm registration id is null");
+                Log.e(TAG, "error: fcm registration id is null");
             }
         } catch (Exception e) {
             Log.e(TAG, "Topic subscribe error. Topic: " + topic + ", error: " + e.getMessage());
@@ -103,7 +174,7 @@ public class MyIntentService extends IntentService {
                 FirebaseMessaging.getInstance().unsubscribeFromTopic("");
                 Log.e(TAG, "Unsubscribed from topic: " + topic);
             } else {
-                Log.e(TAG, "error: gcm registration id is null");
+                Log.e(TAG, "error: fcm registration id is null");
             }
         } catch (Exception e) {
             Log.e(TAG, "Topic unsubscribe error. Topic: " + topic + ", error: " + e.getMessage());

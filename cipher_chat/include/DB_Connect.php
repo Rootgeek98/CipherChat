@@ -11,6 +11,10 @@
 class DB_Connect { // Connection Class
 
     private $connection; // Connection Attribute
+    
+    function __construct() {
+        
+    }
 
     public function connect()
     { // Connection Function
@@ -23,6 +27,11 @@ class DB_Connect { // Connection Class
             $password,
             $database
         ); // Connect using the params from the config file
+        
+        // Check for database connection error
+        if (mysqli_connect_errno()) {
+            echo "Failed to connect to MySQL: " . mysqli_connect_error();
+        }
 
         return $this->connection;
     }

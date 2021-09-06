@@ -1,6 +1,7 @@
 package com.zephyr.cipherchat.app;
 
 import android.app.Application;
+import android.content.Intent;
 import android.text.TextUtils;
 
 /**
@@ -19,6 +20,8 @@ import android.text.TextUtils;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.zephyr.cipherchat.activity.LoginActivity;
+import com.zephyr.cipherchat.helper.AppPreferenceManager;
 
 public class AppController extends Application {
 
@@ -27,6 +30,8 @@ public class AppController extends Application {
     private RequestQueue mRequestQueue;
 
     private static AppController mInstance;
+
+    private AppPreferenceManager pref;
 
     @Override
     public void onCreate() {
@@ -46,6 +51,14 @@ public class AppController extends Application {
         return mRequestQueue;
     }
 
+    public AppPreferenceManager getPrefManager() {
+        if (pref == null) {
+            pref = new AppPreferenceManager(this);
+        }
+
+        return pref;
+    }
+
     public <T> void addToRequestQueue(Request<T> req, String tag) {
         req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
         getRequestQueue().add(req);
@@ -60,5 +73,12 @@ public class AppController extends Application {
         if (mRequestQueue != null) {
             mRequestQueue.cancelAll(tag);
         }
+    }
+
+    public void logout() {
+        pref.clear();
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 }

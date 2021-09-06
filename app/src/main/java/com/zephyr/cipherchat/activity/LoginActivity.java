@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -20,7 +21,8 @@ import com.zephyr.cipherchat.R;
 import com.zephyr.cipherchat.app.Config;
 import com.zephyr.cipherchat.app.AppController;
 import com.zephyr.cipherchat.helper.SQLiteHandler;
-import com.zephyr.cipherchat.helper.SessionManager;
+import com.zephyr.cipherchat.helper.AppPreferenceManager;
+import com.zephyr.cipherchat.model.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private ProgressDialog progressDialog;
 
-    private SessionManager sessionManager;
+    private AppPreferenceManager appPreferenceManager;
 
     private SQLiteHandler sqLiteHandler;
 
@@ -67,10 +69,10 @@ public class LoginActivity extends AppCompatActivity {
         sqLiteHandler = new SQLiteHandler(getApplicationContext());
 
         // Session Manager
-        sessionManager = new SessionManager(getApplicationContext());
+        appPreferenceManager = new AppPreferenceManager(getApplicationContext());
 
         // Check if user is already logged in or not
-        if (sessionManager.isLoggedIn()) {
+        if (appPreferenceManager.isLoggedIn()) {
             // User is already logged in. Take him to main activity
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
@@ -142,19 +144,34 @@ public class LoginActivity extends AppCompatActivity {
                     if (!error) {
                         // user successfully logged in
                         // Create login session
-                        sessionManager.setLogin(true);
+                        appPreferenceManager.setLogin(true);
 
                         // Now store the user in SQLite
 
-                        JSONObject user = jObj.getJSONObject("user");
-                        String firstname = user.getString("firstname");
-                        String lastname = user.getString("lastname");
-                        String username = user.getString("username");
-                        String phone_number = user.getString("phone_number");
-                        String created_at = user.getString("created_at");
+                        JSONObject currentUser = jObj.getJSONObject("user");
+                        String firstname = currentUser.getString("firstname");
+                        String lastname = currentUser.getString("lastname");
+                        String username = currentUser.getString("username");
+                        String phone_number = currentUser.getString("phone_number");
+                        String created_at = currentUser.getString("created_at");
 
                         // Inserting row in users table
                         sqLiteHandler.addUser(phone_number, firstname, lastname, username, created_at);
+
+                        /**
+                         * Same implementation as the one that stores the user in SQLite.
+                         * The only difference is one uses Database to check if user is Logged in whereas
+                         * the other one looks up for stored credentials in shared preferences to check if user
+                         * is logged in.
+                         */
+                        JSONObject userObj = jObj.getJSONObject("user");
+                        User user = new User(userObj.getString("phone_number"),
+                                userObj.getString("firstname"),
+                                userObj.getString("lastname"),
+                                userObj.getString("username"));
+
+                        // storing user in shared preferences
+                        AppController.getInstance().getPrefManager().storeUser(user);
 
                         String success_login = getString(R.string.success_login);
 

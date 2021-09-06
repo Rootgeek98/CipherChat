@@ -51,6 +51,10 @@ public class NotificationUtils {
         this.mContext = mContext;
     }
 
+    public NotificationUtils() {
+
+    }
+
     public void showNotificationMessage(
             String title, String message, String timeStamp, Intent intent) {
         showNotificationMessage(title, message, timeStamp, intent, null);

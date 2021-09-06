@@ -22,7 +22,7 @@ public class DashboardActivity extends AppCompatActivity {
         chatBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(DashboardActivity.this, ChatActivity.class);
+                Intent intent = new Intent(DashboardActivity.this, ChatRoomActivity.class);
                 startActivity(intent);
                 finish();
             }

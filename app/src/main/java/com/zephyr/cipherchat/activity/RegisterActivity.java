@@ -20,7 +20,7 @@ import com.zephyr.cipherchat.R;
 import com.zephyr.cipherchat.app.Config;
 import com.zephyr.cipherchat.app.AppController;
 import com.zephyr.cipherchat.helper.SQLiteHandler;
-import com.zephyr.cipherchat.helper.SessionManager;
+import com.zephyr.cipherchat.helper.AppPreferenceManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,7 +50,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private ProgressDialog progressDialog;
 
-    private SessionManager sessionManager;
+    private AppPreferenceManager appPreferenceManager;
 
     private SQLiteHandler sqLiteHandler;
 
@@ -80,13 +80,13 @@ public class RegisterActivity extends AppCompatActivity {
         progressDialog.setCancelable(false);
 
         // Session manager
-        sessionManager = new SessionManager(getApplicationContext());
+        appPreferenceManager = new AppPreferenceManager(getApplicationContext());
 
         // SQLite database handler
         sqLiteHandler = new SQLiteHandler(getApplicationContext());
 
         // Check if user is already logged in or not
-        if (sessionManager.isLoggedIn()) {
+        if (appPreferenceManager.isLoggedIn()) {
             // User is already logged in. Take him to main activity
             Intent intent = new Intent(RegisterActivity.this,
                     MainActivity.class);

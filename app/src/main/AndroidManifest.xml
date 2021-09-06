@@ -23,7 +23,7 @@
             android:required="false" />
 
         <activity
-            android:name=".activity.ChatActivity"
+            android:name=".activity.ChatRoomActivity"
             android:exported="true" />
         <activity
             android:name=".activity.DashboardActivity"

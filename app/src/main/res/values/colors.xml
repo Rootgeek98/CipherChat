@@ -21,5 +21,6 @@
     <color name="safety_orange">#FF6003</color>
     <color name="dark_grey">#A9A9A9</color>
     <color name="charcoal">#36454F</color>
-
+    <color name="list_divider">#dedede</color>
+    <color name="bg_bubble_self">#E1E1E1</color>
 </resources>
