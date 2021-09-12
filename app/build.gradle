@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    compileSdk 30
+    compileSdk 28
 
     defaultConfig {
         applicationId "com.zephyr.cipherchat"
         minSdk 24
-        targetSdk 30
+        targetSdk 28
         versionCode 1
         versionName "1.0"
 
@@ -40,4 +40,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:19.0.1'
     implementation 'com.github.bumptech.glide:glide:4.10.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
 }

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingBottom="16dp"
     android:paddingLeft="16dp"
@@ -13,36 +14,40 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:textColor="#444444"
-        android:textStyle="bold"
-        android:textSize="16dp" />
+        android:text="..."
+        android:textColor="@color/blue_lagoon"
+        android:textSize="16dp"
+        android:textStyle="bold" />
 
-    <TextView android:id="@+id/message"
+    <TextView
+        android:id="@+id/message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/name"
-        android:textColor="#888888"
         android:layout_marginTop="5dp"
-        android:text="Seems fcm will take some time"/>
+        android:text="Please wait as the app loads chat rooms"
+        android:textColor="@color/blue_lagoon" />
 
-    <TextView android:id="@+id/timestamp"
+    <TextView
+        android:id="@+id/timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="12:00 AM"
-        android:textSize="10dp"
+        android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"/>
+        android:text="..."
+        android:textSize="10dp" />
 
-    <TextView android:id="@+id/count"
+    <TextView
+        android:id="@+id/count"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:gravity="center"
-        android:textSize="10dp"
-        android:textColor="@android:color/white"
         android:layout_below="@id/timestamp"
-        android:layout_marginTop="5dp"
         android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/bg_circle"
+        android:gravity="center"
         android:text="5"
-        android:background="@drawable/bg_circle"/>
+        android:textColor="@color/blue_lagoon"
+        android:textSize="10dp" />
 
 </RelativeLayout>

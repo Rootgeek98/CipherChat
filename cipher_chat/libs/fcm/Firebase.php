@@ -1,4 +1,15 @@
 <?php
+
+/**
+ * This contains the necessary code to connect the application 
+ * to Firebase Cloud Messaging Service
+ * 
+ * @author Bill Glinton <billieglinton@gmail.com>
+ * @author Romuald Ashuza <romuald.ashuza@strathmore.edu>
+ * @author Betty Kyalo <betty.kyalo@strathmore.edu>
+ * @author Kelvin Kimutai <kelvinkpkrr.@gmail.com>
+ */
+
 class Firebase {
  
     // constructor

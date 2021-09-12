@@ -3,16 +3,16 @@ package com.zephyr.cipherchat.model;
 import java.io.Serializable;
 
 public class Message implements Serializable {
-    String id, message, createdAt;
+    String id, message, sentAt;
     User user;
 
     public Message() {
     }
 
-    public Message(String id, String message, String createdAt, User user) {
+    public Message(String id, String message, String sentAt, User user) {
         this.id = id;
         this.message = message;
-        this.createdAt = createdAt;
+        this.sentAt = sentAt;
         this.user = user;
     }
 
@@ -32,12 +32,12 @@ public class Message implements Serializable {
         this.message = message;
     }
 
-    public String getCreatedAt() {
-        return createdAt;
+    public String getSentAt() {
+        return sentAt;
     }
 
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
+    public void setSentAt(String createdAt) {
+        this.sentAt = createdAt;
     }
 
     public User getUser() {

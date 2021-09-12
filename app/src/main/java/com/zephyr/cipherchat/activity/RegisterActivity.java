@@ -17,10 +17,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.zephyr.cipherchat.R;
-import com.zephyr.cipherchat.app.Config;
 import com.zephyr.cipherchat.app.AppController;
-import com.zephyr.cipherchat.helper.SQLiteHandler;
+import com.zephyr.cipherchat.app.EndPoints;
 import com.zephyr.cipherchat.helper.AppPreferenceManager;
+import com.zephyr.cipherchat.model.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,8 +52,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     private AppPreferenceManager appPreferenceManager;
 
-    private SQLiteHandler sqLiteHandler;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,14 +80,10 @@ public class RegisterActivity extends AppCompatActivity {
         // Session manager
         appPreferenceManager = new AppPreferenceManager(getApplicationContext());
 
-        // SQLite database handler
-        sqLiteHandler = new SQLiteHandler(getApplicationContext());
-
         // Check if user is already logged in or not
-        if (appPreferenceManager.isLoggedIn()) {
+        if (AppController.getInstance().getPrefManager().getUser() != null) {
             // User is already logged in. Take him to main activity
-            Intent intent = new Intent(RegisterActivity.this,
-                    MainActivity.class);
+            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
         }
@@ -115,7 +109,8 @@ public class RegisterActivity extends AppCompatActivity {
                             short_password, Toast.LENGTH_LONG)
                             .show();
                 }else {
-                    if (password.length() < 8 || confirm_password.length() < 8) {
+                    password.length();
+                    if (confirm_password.length() < 8) {
                         Toast.makeText(getApplicationContext(),
                                 short_password, Toast.LENGTH_LONG)
                                 .show();
@@ -164,7 +159,7 @@ public class RegisterActivity extends AppCompatActivity {
         showDialog();
 
         StringRequest strReq = new StringRequest(Request.Method.POST,
-                Config.URL_REGISTER, new Response.Listener<String>() {
+                EndPoints.CREATE_ACCOUNT, new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
@@ -173,21 +168,16 @@ public class RegisterActivity extends AppCompatActivity {
 
                 try {
                     JSONObject jObj = new JSONObject(response);
-                    boolean error = jObj.getBoolean("error");
-                    if (!error) {
-                        // User successfully stored in MySQL
-                        // Now store the user in sqlite
 
-                        JSONObject user = jObj.getJSONObject("user");
+                    if (!jObj.getBoolean("error")) {
+                        JSONObject userObj = jObj.getJSONObject("user");
+                        User user = new User(userObj.getString("phone_number"),
+                                userObj.getString("firstname"),
+                                userObj.getString("lastname"),
+                                userObj.getString("username"));
 
-                        String firstname = user.getString("firstname");
-                        String lastname = user.getString("lastname");
-                        String username = user.getString("username");
-                        String phone_number = user.getString("phone_number");
-                        String created_at = user.getString("created_at");
-
-                        // Inserting row in users table
-                        sqLiteHandler.addUser(phone_number, firstname, lastname, username, created_at);
+                        // storing user in shared preferences
+                        AppController.getInstance().getPrefManager().storeUser(user);
 
                         String success_signup = getString(R.string.success_signup);
 

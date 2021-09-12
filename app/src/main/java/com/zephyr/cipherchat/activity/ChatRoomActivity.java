@@ -42,6 +42,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ChatRoomActivity extends AppCompatActivity {
 
@@ -60,15 +61,15 @@ public class ChatRoomActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         inputMessage = findViewById(R.id.message);
-        btnSend = (Button) findViewById(R.id.btn_send);
+        btnSend = findViewById(R.id.btn_send);
 
         Intent intent = getIntent();
-        chatRoomId = intent.getStringExtra("chat_room_id");
-        String title = intent.getStringExtra("name");
+        chatRoomId = intent.getStringExtra("urid");
+        String title = intent.getStringExtra("room_name");
 
         getSupportActionBar().setTitle(title);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -78,14 +79,14 @@ public class ChatRoomActivity extends AppCompatActivity {
             finish();
         }
 
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView = findViewById(R.id.recycler_view);
 
         messageArrayList = new ArrayList<>();
 
         // self user id is to identify the message owner
-        String selfUserId = AppController.getInstance().getPrefManager().getUser().getPhone_number();
+        String selfphoneNumber = AppController.getInstance().getPrefManager().getUser().getPhone_number();
 
-        mAdapter = new ChatRoomThreadAdapter(this, messageArrayList, selfUserId);
+        mAdapter = new ChatRoomThreadAdapter(this, messageArrayList, selfphoneNumber);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -135,7 +136,11 @@ public class ChatRoomActivity extends AppCompatActivity {
      * */
     private void handlePushNotification(Intent intent) {
         Message message = (Message) intent.getSerializableExtra("message");
-        String chatRoomId = intent.getStringExtra("chat_room_id");
+        String chatRoomId = intent.getStringExtra("room_id");
+
+        Log.e(TAG, "message: " + message);
+
+        Log.e(TAG, "room_id: " + chatRoomId);
 
         if (message != null && chatRoomId != null) {
             messageArrayList.add(message);
@@ -176,22 +181,22 @@ public class ChatRoomActivity extends AppCompatActivity {
                     JSONObject obj = new JSONObject(response);
 
                     // check for error
-                    if (obj.getBoolean("error") == false) {
+                    if (!obj.getBoolean("error")) {
                         JSONObject commentObj = obj.getJSONObject("message");
 
-                        String commentId = commentObj.getString("message_id");
+                        String commentId = commentObj.getString("ucid");
                         String commentText = commentObj.getString("message");
-                        String createdAt = commentObj.getString("created_at");
+                        String sentAt = commentObj.getString("sent_at");
 
                         JSONObject userObj = obj.getJSONObject("user");
-                        String userId = userObj.getString("user_id");
-                        String userName = userObj.getString("name");
-                        User user = new User(userId, userName, null);
+                        String phoneNumber = userObj.getString("phone_number");
+                        String userName = userObj.getString("username");
+                        User user = new User(phoneNumber, null, null, userName);
 
                         Message message = new Message();
                         message.setId(commentId);
                         message.setMessage(commentText);
-                        message.setCreatedAt(createdAt);
+                        message.setSentAt(sentAt);
                         message.setUser(user);
 
                         messageArrayList.add(message);
@@ -225,7 +230,7 @@ public class ChatRoomActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("user_id", AppController.getInstance().getPrefManager().getUser().getPhone_number());
+                params.put("phone_number", AppController.getInstance().getPrefManager().getUser().getPhone_number());
                 params.put("message", message);
 
                 Log.e(TAG, "Params: " + params.toString());
@@ -268,25 +273,25 @@ public class ChatRoomActivity extends AppCompatActivity {
                     JSONObject obj = new JSONObject(response);
 
                     // check for error
-                    if (obj.getBoolean("error") == false) {
+                    if (!obj.getBoolean("error")) {
                         JSONArray commentsObj = obj.getJSONArray("messages");
 
                         for (int i = 0; i < commentsObj.length(); i++) {
-                            JSONObject commentObj = (JSONObject) commentsObj.get(i);
+                            JSONObject commentObj = commentsObj.getJSONObject(i);
 
                             String commentId = commentObj.getString("message_id");
                             String commentText = commentObj.getString("message");
-                            String createdAt = commentObj.getString("created_at");
+                            String sentAt = commentObj.getString("sent_at");
 
                             JSONObject userObj = commentObj.getJSONObject("user");
                             String phone_number = userObj.getString("phone_number");
                             String userName = userObj.getString("username");
-                            User user = new User(phone_number, userName, null);
+                            User user = new User(phone_number, null, null, userName);
 
                             Message message = new Message();
                             message.setId(commentId);
                             message.setMessage(commentText);
-                            message.setCreatedAt(createdAt);
+                            message.setSentAt(sentAt);
                             message.setUser(user);
 
                             messageArrayList.add(message);

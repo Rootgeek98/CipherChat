@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -18,9 +17,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.zephyr.cipherchat.R;
-import com.zephyr.cipherchat.app.Config;
 import com.zephyr.cipherchat.app.AppController;
-import com.zephyr.cipherchat.helper.SQLiteHandler;
+import com.zephyr.cipherchat.app.EndPoints;
 import com.zephyr.cipherchat.helper.AppPreferenceManager;
 import com.zephyr.cipherchat.model.User;
 
@@ -46,8 +44,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private AppPreferenceManager appPreferenceManager;
 
-    private SQLiteHandler sqLiteHandler;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,14 +61,11 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
 
-        // SQLite Database Handler
-        sqLiteHandler = new SQLiteHandler(getApplicationContext());
-
         // Session Manager
         appPreferenceManager = new AppPreferenceManager(getApplicationContext());
 
         // Check if user is already logged in or not
-        if (appPreferenceManager.isLoggedIn()) {
+        if (AppController.getInstance().getPrefManager().getUser() != null) {
             // User is already logged in. Take him to main activity
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
@@ -128,7 +121,7 @@ public class LoginActivity extends AppCompatActivity {
         showDialog();
 
         StringRequest strReq = new StringRequest(Request.Method.POST,
-                Config.URL_LOGIN, new Response.Listener<String>() {
+                EndPoints.LOGIN, new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
@@ -138,32 +131,13 @@ public class LoginActivity extends AppCompatActivity {
                 try {
                     String wrong_credentials = getString(R.string.wrong_credentials);
                     JSONObject jObj = new JSONObject(response);
-                    boolean error = jObj.getBoolean("error");
 
                     // Check for error node in json
-                    if (!error) {
+                    if (!jObj.getBoolean("error")) {
                         // user successfully logged in
                         // Create login session
                         appPreferenceManager.setLogin(true);
 
-                        // Now store the user in SQLite
-
-                        JSONObject currentUser = jObj.getJSONObject("user");
-                        String firstname = currentUser.getString("firstname");
-                        String lastname = currentUser.getString("lastname");
-                        String username = currentUser.getString("username");
-                        String phone_number = currentUser.getString("phone_number");
-                        String created_at = currentUser.getString("created_at");
-
-                        // Inserting row in users table
-                        sqLiteHandler.addUser(phone_number, firstname, lastname, username, created_at);
-
-                        /**
-                         * Same implementation as the one that stores the user in SQLite.
-                         * The only difference is one uses Database to check if user is Logged in whereas
-                         * the other one looks up for stored credentials in shared preferences to check if user
-                         * is logged in.
-                         */
                         JSONObject userObj = jObj.getJSONObject("user");
                         User user = new User(userObj.getString("phone_number"),
                                 userObj.getString("firstname"),

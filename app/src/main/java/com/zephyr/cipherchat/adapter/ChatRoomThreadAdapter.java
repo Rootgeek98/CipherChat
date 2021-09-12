@@ -33,8 +33,8 @@ public class ChatRoomThreadAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
         public ViewHolder(View view) {
             super(view);
-            message = (TextView) itemView.findViewById(R.id.message);
-            timestamp = (TextView) itemView.findViewById(R.id.timestamp);
+            message = itemView.findViewById(R.id.message);
+            timestamp = itemView.findViewById(R.id.timestamp);
         }
     }
 
@@ -72,7 +72,8 @@ public class ChatRoomThreadAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     @Override
     public int getItemViewType(int position) {
         Message message = messageArrayList.get(position);
-        if (message.getUser().getPhone_number().equals(phone_number)) {
+        String phoneNumber = message.getUser().getPhone_number();
+        if (phoneNumber.equals(phone_number)) {
             return SELF;
         }
 
@@ -84,7 +85,7 @@ public class ChatRoomThreadAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         Message message = messageArrayList.get(position);
         ((ViewHolder) holder).message.setText(message.getMessage());
 
-        String timestamp = getTimeStamp(message.getCreatedAt());
+        String timestamp = getTimeStamp(message.getSentAt());
 
         if (message.getUser().getUsername() != null)
             timestamp = message.getUser().getUsername() + ", " + timestamp;

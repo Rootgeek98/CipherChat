@@ -1,4 +1,14 @@
 <?php
+
+/**
+ * This file contains code necessary for interaction of the
+ * application with the database
+ * 
+ * @author Bill Glinton <tom.omuom@strathmore.edu>
+ * @author Romuald Ashuza <romuald.ashuza@strathmore.edu>
+ * @author Betty Kyalo <betty.kyalo@strathmore.edu>
+ * @author Kelvin Kimutai<kelvinkpkrr.@gmail.com>
+ */
  
 error_reporting(-1);
 ini_set('display_errors', 'On');
@@ -10,7 +20,9 @@ require '.././libs/Slim/Slim.php';
  
 $app = new \Slim\Slim();
  
-// User Signup
+/**
+ * User Signup
+ */
 $app->post('/user/create_account', function() use ($app) {
     // check for required params
     verifyRequiredParams(array('firstname','lastname','username', 'phone_number', 'password'));
@@ -29,6 +41,9 @@ $app->post('/user/create_account', function() use ($app) {
     echoRespnse(200, $response);
 });
 
+/**
+ * User Login
+ */
 $app->post('/user/login', function() use ($app) {
     // check for required params
     verifyRequiredParams(array('username', 'password'));
@@ -46,17 +61,17 @@ $app->post('/user/login', function() use ($app) {
  
 /* * *
  * Updating user
- *  we use this url to update user's gcm registration id
+ *  we use this url to update user's fcm registration id
  */
 $app->put('/user/:id', function($phone_number) use ($app) {
     global $app;
  
-    verifyRequiredParams(array('gcm_registration_id'));
+    verifyRequiredParams(array('fcm_registration_id'));
  
-    $gcm_registration_id = $app->request->put('gcm_registration_id');
+    $fcm_registration_id = $app->request->put('fcm_registration_id');
  
     $db = new DB_Functions();
-    $response = $db->updateGcmID($phone_number, $gcm_registration_id);
+    $response = $db->updateGcmID($phone_number, $fcm_registration_id);
  
     echoRespnse(200, $response);
 });
@@ -66,14 +81,13 @@ $app->put('/user/:id', function($phone_number) use ($app) {
  */
 $app->post('/chat_rooms/create_chat_room', function() use ($app) {
     // check for required params
-    verifyRequiredParams(array('room_name', 'password'));
+    verifyRequiredParams(array('room_name'));
  
     // reading post params
     $room_name = $app->request->post('room_name');
-    $password = $app->request->post('password');
  
     $db = new DB_Functions();
-    $response = $db->createChatRoom($room_name, $password);
+    $response = $db->createChatRoom($room_name);
  
     // echo json response
     echoRespnse(200, $response);
@@ -96,13 +110,14 @@ $app->get('/chat_rooms', function() {
 
     $response["chat_rooms"] = array();
 
+    // pushing single chat room into array
     while($row = $result->fetch_assoc()) {
+
+        $tmp = array();
 
         $tmp['urid'] = $row['urid'];
 
         $tmp['room_name'] = $row['room_name'];
-
-        $tmp['password'] = $row['room_password'];
 
         $tmp['created_at'] = $row['created_at'];
 
@@ -128,9 +143,9 @@ $app->post('/chat_rooms/:id/message', function($room_id) {
     $response = $db->addMessage($phone_number, $room_id, $message);
  
     if ($response['error'] == false) {
-        require_once __DIR__ . '/../libs/gcm/gcm.php';
-        require_once __DIR__ . '/../libs/gcm/push.php';
-        $gcm = new GCM();
+        require_once __DIR__ . '/../libs/fcm/Firebase.php';
+        require_once __DIR__ . '/../libs/fcm/push.php';
+        $fcm = new Firebase();
         $push = new Push();
  
         // get the user using userid
@@ -141,7 +156,7 @@ $app->post('/chat_rooms/:id/message', function($room_id) {
         $data['message'] = $response['message'];
         $data['room_id'] = $room_id;
  
-        $push->setTitle("Google Cloud Messaging");
+        $push->setTitle("Firebase Cloud Messaging");
         $push->setIsBackground(FALSE);
         $push->setFlag(PUSH_FLAG_CHATROOM);
         $push->setData($data);
@@ -149,7 +164,7 @@ $app->post('/chat_rooms/:id/message', function($room_id) {
         // echo json_encode($push->getPush());exit;
  
         // sending push message to a topic
-        $gcm->sendToTopic('topic_' . $room_id, $push->getPush());
+        $fcm->sendToTopic('topic_' . $room_id, $push->getPush());
  
         $response['user'] = $user;
         $response['error'] = false;
@@ -161,7 +176,7 @@ $app->post('/chat_rooms/:id/message', function($room_id) {
  
 /**
  * Sending push notification to a single user
- * We use user's gcm registration id to send the message
+ * We use user's fcm registration id to send the message
  * * */
 $app->post('/users/:id/message', function($to_phone_number) {
     global $app;
@@ -175,9 +190,9 @@ $app->post('/users/:id/message', function($to_phone_number) {
     $response = $db->addMessage($from_phone_number, $to_phone_number, $message);
  
     if ($response['error'] == false) {
-        require_once __DIR__ . '/../libs/gcm/gcm.php';
-        require_once __DIR__ . '/../libs/gcm/push.php';
-        $gcm = new GCM();
+        require_once __DIR__ . '/../libs/fcm/Firebase.php';
+        require_once __DIR__ . '/../libs/fcm/push.php';
+        $fcm = new Firebase();
         $push = new Push();
  
         $user = $db->getUser($to_phone_number);
@@ -187,13 +202,13 @@ $app->post('/users/:id/message', function($to_phone_number) {
         $data['message'] = $response['message'];
         $data['image'] = '';
  
-        $push->setTitle("Google Cloud Messaging");
+        $push->setTitle("Firebase Cloud Messaging");
         $push->setIsBackground(FALSE);
         $push->setFlag(PUSH_FLAG_USER);
         $push->setData($data);
  
         // sending push message to single user
-        $gcm->send($user['gcm_registration_id'], $push->getPush());
+        $fcm->send($user['fcm_registration_id'], $push->getPush());
  
         $response['user'] = $user;
         $response['error'] = false;
@@ -205,7 +220,7 @@ $app->post('/users/:id/message', function($to_phone_number) {
  
 /**
  * Sending push notification to multiple users
- * We use gcm registration ids to send notification message
+ * We use fcm registration ids to send notification message
  * At max you can send message to 1000 recipients
  */
 $app->post('/users/message', function() use ($app) {
@@ -213,8 +228,8 @@ $app->post('/users/message', function() use ($app) {
     $response = array();
     verifyRequiredParams(array('phone_number', 'to', 'message'));
  
-    require_once __DIR__ . '/../libs/gcm/gcm.php';
-    require_once __DIR__ . '/../libs/gcm/push.php';
+    require_once __DIR__ . '/../libs/fcm/Firebase.php';
+    require_once __DIR__ . '/../libs/fcm/push.php';
  
     $db = new DB_Functions();
  
@@ -227,14 +242,14 @@ $app->post('/users/message', function() use ($app) {
  
     $registration_ids = array();
  
-    // preparing gcm registration ids array
+    // preparing fcm registration ids array
     foreach ($users as $u) {
-        array_push($registration_ids, $u['gcm_registration_id']);
+        array_push($registration_ids, $u['fcm_registration_id']);
     }
  
     // insert messages in db
     // send push to multiple users
-    $gcm = new GCM();
+    $fcm = new Firebase();
     $push = new Push();
  
     // creating tmp message, skipping database insertion
@@ -249,13 +264,13 @@ $app->post('/users/message', function() use ($app) {
     $data['message'] = $msg;
     $data['image'] = '';
  
-    $push->setTitle("Google Cloud Messaging");
+    $push->setTitle("Firebase Cloud Messaging");
     $push->setIsBackground(FALSE);
     $push->setFlag(PUSH_FLAG_USER);
     $push->setData($data);
  
     // sending push message to multiple users
-    $gcm->sendMultiple($registration_ids, $push->getPush());
+    $fcm->sendMultiple($registration_ids, $push->getPush());
  
     $response['error'] = false;
  
@@ -267,17 +282,17 @@ $app->post('/users/send_to_all', function() use ($app) {
     $response = array();
     verifyRequiredParams(array('phone_number', 'message'));
  
-    require_once __DIR__ . '/../libs/gcm/gcm.php';
-    require_once __DIR__ . '/../libs/gcm/push.php';
+    require_once __DIR__ . '/../libs/fcm/Firebase.php';
+    require_once __DIR__ . '/../libs/fcm/push.php';
  
     $db = new DB_Functions();
  
     $phone_number = $app->request->post('phone_number');
     $message = $app->request->post('message');
  
-    require_once __DIR__ . '/../libs/gcm/gcm.php';
-    require_once __DIR__ . '/../libs/gcm/push.php';
-    $gcm = new GCM();
+    require_once __DIR__ . '/../libs/fcm/Firebase.php';
+    require_once __DIR__ . '/../libs/fcm/push.php';
+    $fcm = new Firebase();
     $push = new Push();
  
     // get the user using userid
@@ -295,14 +310,14 @@ $app->post('/users/send_to_all', function() use ($app) {
     $data['message'] = $msg;
     $data['image'] = '';
  
-    $push->setTitle("Google Cloud Messaging");
+    $push->setTitle("Firebase Cloud Messaging");
     $push->setIsBackground(FALSE);
     $push->setFlag(PUSH_FLAG_USER);
     $push->setData($data);
  
     // sending message to topic `global`
     // On the device every user should subscribe to `global` topic
-    $gcm->sendToTopic('global', $push->getPush());
+    $fcm->sendToTopic('global', $push->getPush());
  
     $response['user'] = $user;
     $response['error'] = false;

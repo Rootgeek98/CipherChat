@@ -16,14 +16,11 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
@@ -33,18 +30,16 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.zephyr.cipherchat.R;
 import com.zephyr.cipherchat.adapter.ChatRoomsAdapter;
 import com.zephyr.cipherchat.app.AppController;
 import com.zephyr.cipherchat.app.Config;
 import com.zephyr.cipherchat.app.EndPoints;
-import com.zephyr.cipherchat.helper.SQLiteHandler;
 import com.zephyr.cipherchat.helper.AppPreferenceManager;
 import com.zephyr.cipherchat.helper.SimpleDividerItemDecoration;
 import com.zephyr.cipherchat.model.ChatRoom;
 import com.zephyr.cipherchat.model.Message;
-import com.zephyr.cipherchat.service.MyIntentService;
+import com.zephyr.cipherchat.service.AppIntentService;
 import com.zephyr.cipherchat.utils.NotificationUtils;
 
 import org.json.JSONArray;
@@ -57,21 +52,10 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
     private ArrayList<ChatRoom> chatRoomArrayList;
     private ChatRoomsAdapter mAdapter;
     private RecyclerView recyclerView;
-    private BroadcastReceiver mRegistrationBroadcastReceiver;
-    private TextView txtRegId, txtMessage;
-
-    /*private TextView tvFirstname;
-    private TextView tvtLastname;
-    private TextView tvUsername;
-    private TextView tvPhoneNumber;*/
-    private Button buttonSubscribe;
-    private Button btnLogout;
-    private Button btnDashboard;
-
-    private SQLiteHandler sqLiteHandler;
     private AppPreferenceManager appPreferenceManager;
 
     @Override
@@ -79,28 +63,30 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        chatRoomArrayList = new ArrayList<>();
+        mAdapter = new ChatRoomsAdapter(this, chatRoomArrayList);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView = findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(new SimpleDividerItemDecoration(
+                getApplicationContext()
+        ));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(mAdapter);
 
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-
-        //txtRegId = findViewById(R.id.txt_reg_id);
-        //txtMessage = findViewById(R.id.txt_push_message);
-
-
-        /*tvFirstname = findViewById(R.id.tvFirstname);
-        tvtLastname = findViewById(R.id.tvLastname);
-        tvUsername = findViewById(R.id.tvUsername);
-        tvPhoneNumber = findViewById(R.id.tvPhoneNumber);*/
-        //btnLogout = findViewById(R.id.btnLogout);
-        //btnDashboard = findViewById(R.id.btnDashboard);
-
-        //buttonSubscribe = (Button)findViewById(R.id.button_subscribe);
+        /**
+         * Check for login session. If not logged in launch Login Activity
+         */
+        if (AppController.getInstance().getPrefManager().getUser() == null) {
+            logoutUser();
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Create channel to show notifications.
-            String channelId  = getString(R.string.default_notification_channel_id);
-            String channelName = "Fcm notifications";
+            String channelId  = Config.PUSH_NOTIFICATION;
+            String channelName = Config.CHANNEL_NAME;
             NotificationManager notificationManager =
                     getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(new NotificationChannel(channelId,
@@ -122,35 +108,22 @@ public class MainActivity extends AppCompatActivity {
                      * Fcm successfully registered
                      * now subscribe to `global` topic to receive app wide notifications
                      */
-                    //FirebaseMessaging.getInstance().subscribeToTopic(Config.TOPIC_GLOBAL);
-                    //Toast.makeText(MainActivity.this, ""+token, Toast.LENGTH_SHORT).show();
                     displayFirebaseRegId();
 
                     subscribeToGlobalTopic();
 
                 } else if (intent.getAction().equals(Config.SENT_TOKEN_TO_SERVER)) {
-                    // gcm registration id is stored in our server's MySQL
-                    Log.e(TAG, "GCM registration id is sent to our server");
+                    // fcm registration id is stored in our server's MySQL
+                    Log.e(TAG, "FCM registration id is sent to our server");
 
                 } else if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
                     // new push notification is received
-                    //String message = intent.getStringExtra("message");
-                    //Toast.makeText(getApplicationContext(), "Push notification: " + message, Toast.LENGTH_LONG).show();
-                    //txtMessage.setText(message);
                     handlePushNotification(intent);
                 }
             }
         };
 
-        chatRoomArrayList = new ArrayList<>();
-        mAdapter = new ChatRoomsAdapter(this, chatRoomArrayList);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new SimpleDividerItemDecoration(
-                getApplicationContext()
-        ));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(mAdapter);
+
 
         recyclerView.addOnItemTouchListener(new ChatRoomsAdapter.RecyclerTouchListener(getApplicationContext(), recyclerView, new ChatRoomsAdapter.ClickListener() {
             @Override
@@ -178,63 +151,8 @@ public class MainActivity extends AppCompatActivity {
             fetchChatRooms();
         }
 
-        /*
-        buttonSubscribe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) { // Subscribe User To Topic
-                FirebaseMessaging.getInstance().subscribeToTopic(Config.TOPIC_GLOBAL);
-            }
-        });
-         */
-
-        // SqLite database handler
-        sqLiteHandler = new SQLiteHandler(getApplicationContext());
-
         // session manager
         appPreferenceManager = new AppPreferenceManager(getApplicationContext());
-
-        if (!appPreferenceManager.isLoggedIn() || AppController.getInstance().getPrefManager().getUser() == null) {
-            logoutUser();
-            launchLoginActivity();
-        }
-
-        /*// Fetching user details from sqlite
-        HashMap<String, String> user = sqLiteHandler.getUserDetails();
-
-        String firstname = user.get("firstname");
-        String lastname = user.get("lastname");
-        String username = user.get("username");
-        String phone_number = user.get("phone_number");
-
-        // Displaying the user details on the screen
-        tvFirstname.setText(firstname);
-        tvtLastname.setText(lastname);
-        tvUsername.setText(username);
-        tvPhoneNumber.setText(phone_number);*/
-
-        // Logout button click event
-        /*
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                logoutUser();
-            }
-        });
-
-        btnDashboard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(),
-                        DashboardActivity.class);
-                startActivity(i);
-                finish();
-            }
-        });
-
-         */
-
-        //displayFirebaseRegId();
 
     }
 
@@ -273,15 +191,6 @@ public class MainActivity extends AppCompatActivity {
         String regId = pref.getString("regId", null);
 
         Log.e(TAG, "Firebase reg id: " + regId);
-
-        /*
-        if (!TextUtils.isEmpty(regId)) {
-            txtRegId.setText("Firebase Reg Id: " + regId);
-            Toast.makeText(MainActivity.this, "" + regId, Toast.LENGTH_SHORT).show();
-        } else {
-            txtRegId.setText("Firebase Reg Id is not received yet!");
-        }
-         */
     }
 
     /**
@@ -318,17 +227,16 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject obj = new JSONObject(response);
 
                     // check for error flag
-                    if (obj.getBoolean("error") == false) {
+                    if (!obj.getBoolean("error")) {
                         JSONArray chatRoomsArray = obj.getJSONArray("chat_rooms");
                         for (int i = 0; i < chatRoomsArray.length(); i++) {
-                            JSONObject chatRoomsObj = (JSONObject) chatRoomsArray.get(i);
+                            JSONObject chatRoomsObj = chatRoomsArray.getJSONObject(i);
                             ChatRoom cr = new ChatRoom();
                             cr.setId(chatRoomsObj.getString("urid"));
                             cr.setName(chatRoomsObj.getString("room_name"));
                             cr.setLastMessage("");
                             cr.setUnreadCount(0);
                             cr.setTimestamp(chatRoomsObj.getString("created_at"));
-
                             chatRoomArrayList.add(cr);
                         }
 
@@ -365,9 +273,9 @@ public class MainActivity extends AppCompatActivity {
      * Subscribes to global topic
      */
     private void subscribeToGlobalTopic() {
-        Intent intent = new Intent(this, MyIntentService.class);
-        intent.putExtra(MyIntentService.KEY, MyIntentService.SUBSCRIBE);
-        intent.putExtra(MyIntentService.TOPIC, Config.TOPIC_GLOBAL);
+        Intent intent = new Intent(this, AppIntentService.class);
+        intent.putExtra(AppIntentService.KEY, AppIntentService.SUBSCRIBE);
+        intent.putExtra(AppIntentService.TOPIC, Config.TOPIC_GLOBAL);
         startService(intent);
     }
 
@@ -379,18 +287,11 @@ public class MainActivity extends AppCompatActivity {
     private void subscribeToAllTopics() {
         for (ChatRoom cr : chatRoomArrayList) {
 
-            Intent intent = new Intent(this, MyIntentService.class);
-            intent.putExtra(MyIntentService.KEY, MyIntentService.SUBSCRIBE);
-            intent.putExtra(MyIntentService.TOPIC, "topic_" + cr.getId());
+            Intent intent = new Intent(this, AppIntentService.class);
+            intent.putExtra(AppIntentService.KEY, AppIntentService.SUBSCRIBE);
+            intent.putExtra(AppIntentService.TOPIC, "topic_" + cr.getId());
             startService(intent);
         }
-    }
-
-    private void launchLoginActivity() {
-        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
     }
 
     /**
@@ -400,10 +301,9 @@ public class MainActivity extends AppCompatActivity {
     private void logoutUser() {
         appPreferenceManager.setLogin(false);
 
-        sqLiteHandler.deleteUsers();
-
         // Launching the login activity
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }
@@ -433,7 +333,7 @@ public class MainActivity extends AppCompatActivity {
 
     // starting the service to register with GCM
     private void registerFCM() {
-        Intent intent = new Intent(this, MyIntentService.class);
+        Intent intent = new Intent(this, AppIntentService.class);
         intent.putExtra("key", "register");
         startService(intent);
     }
@@ -467,6 +367,7 @@ public class MainActivity extends AppCompatActivity {
         switch (menuItem.getItemId()) {
             case R.id.action_logout:
                 AppController.getInstance().logout();
+                appPreferenceManager.setLogin(false);
                 break;
         }
         return super.onOptionsItemSelected(menuItem);

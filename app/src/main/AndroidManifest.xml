@@ -3,10 +3,17 @@
     package="com.zephyr.cipherchat">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!-- Permission to vibrate -->
-    <uses-permission android:name="android.permission.VIBRATE" />
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- needed for older devices -
+     used to check app background / foreground status -->
+    <uses-permission android:name="android.permission.GET_TASKS" />
+
+    <permission
+        android:name="com.zephyr.cipherchat.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="com.zephyr.cipherchat.permission.C2D_MESSAGE" />
 
     <application
         android:name=".app.AppController"
@@ -15,7 +22,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CipherChat"
+        android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
 
         <uses-library
@@ -24,18 +31,28 @@
 
         <activity
             android:name=".activity.ChatRoomActivity"
-            android:exported="true" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".activity.MainActivity"
+            android:exported="true">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.MainActivity" />
+        </activity>
         <activity
             android:name=".activity.DashboardActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:exported="true" />
         <activity
             android:name=".activity.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:exported="true" />
         <activity
             android:name=".activity.RegisterActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:exported="true" />
         <activity
             android:name=".activity.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,13 +61,21 @@
             </intent-filter>
         </activity>
 
-        <!-- Firebase Notifications -->
+        <!-- Added for Firebase Cloud Messaging -->
         <service
             android:name=".service.CustomMessagingService"
             android:exported="false"
             android:directBootAware="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".service.AppIntentService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
 
@@ -66,6 +91,6 @@
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/default_notification_channel_id" />
 
-        <!-- ./Firebase Notifications -->
+        <!-- End Added for Firebase Cloud Messaging -->
     </application>
 </manifest>

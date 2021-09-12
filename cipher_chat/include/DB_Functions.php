@@ -2,6 +2,7 @@
 /**
  * DB_Functions
  * Contains all the functions to manipulate the database
+ * 
  * @author Bill Glinton <tom.omuom@strathmore.edu>
  * @author Romuald Ashuza <romuald.ashuza@strathmore.edu>
  * @author Betty Kyalo <betty.kyalo@strathmore.edu>
@@ -60,8 +61,6 @@ class DB_Functions {
 
         if ($result) {
 
-            $response['error'] = false;
-
             $check_query = "SELECT * FROM users WHERE phone_number = ?";
         
             $prepared_statement = $this->connection->prepare($check_query);
@@ -74,21 +73,19 @@ class DB_Functions {
 
                 $row = $prepared_statement->get_result()->fetch_assoc();
 
-                $tmp = array();
+                $response["error"] = FALSE;
 
-                $tmp['firstname'] = $row['firstname'];
+                $response["user"]["firstname"] = $row["firstname"];
 
-                $tmp['lastname'] = $row['lastname'];
+                $response["user"]["lastname"] = $row["lastname"];
 
-                $tmp['username'] = $row['username'];
+                $response["user"]["username"] = $row["username"];
 
-                $tmp['phone_number'] = $row['phone_number'];
+                $response["user"]["phone_number"] = $row["phone_number"];
 
-                $tmp['password'] = $row['encrypted_password'];
+                $response["user"]["password"] = $row["encrypted_password"];
 
-                $tmp['created_at'] = $row['created_at'];
-
-                $response['message'] = $tmp;
+                $response["user"]["created_at"] = $row["created_at"];
                 
                 //return $user;
                 
@@ -97,7 +94,7 @@ class DB_Functions {
 
         } else {
 
-            $response['error'] = true;
+            $response['error'] = TRUE;
 
             $response['message'] = 'Failed Creating User with username ' . $username. ' and phone number '. $phone_number.  '. The user exists';
         }
@@ -118,6 +115,8 @@ class DB_Functions {
      * @return void
      */
     public function authenticateUser($username, $password) {
+
+        $response = array();
         
         $get_query = "SELECT * FROM users WHERE username = ?";
 
@@ -133,16 +132,36 @@ class DB_Functions {
 
             $check_password = password_verify($password, $user['encrypted_password']);
 
-            if ($check_password > 0) {
+            if ($check_password > 0) { // User Authentication Details are correct
 
-                return $user; // User Authentication Details are correct
+                //return $user;
 
-            } else {
+                $response["error"] = FALSE;
 
-                return NULL; //User Authentication Details are incorrect
+                $response["user"]["firstname"] = $user["firstname"];
+    
+                $response["user"]["lastname"] = $user["lastname"];
+    
+                $response["user"]["username"] = $user["username"];
+    
+                $response["user"]["phone_number"] = $user["phone_number"];
+    
+                $response["user"]["password"] = $user["encrypted_password"];
+    
+                $response["user"]["created_at"] = $user["created_at"];
+
+            } else { //User Authentication Details are incorrect
+
+                //return NULL;
+                
+                $response["error"] = TRUE;
+
+                $response["error_message"] = "Wrong Credentials. Please try again!";
 
             }
         }
+
+        return $response;
     }
     
     /**
@@ -274,10 +293,10 @@ class DB_Functions {
             // $user = $stmt->get_result()->fetch_assoc();
 
             $stmt->bind_result(
+                $phone_number, 
                 $firstname, 
                 $lastname, 
                 $username, 
-                $phone_number, 
                 $gcm_registration_id, 
                 $created_at);
 
@@ -372,21 +391,21 @@ class DB_Functions {
      * @param  mixed $password
      * @return void
      */
-    public function createChatRoom($room_name, $password) {
+    public function createChatRoom($room_name) {
 
         $response = array();
 
         $urid = uniqid(''); // Generates Unique Room ID
 
         $create_query = "INSERT INTO rooms (
-            urid, room_name, room_password, created_at) 
-            VALUES (?, ?, ?,  now())";
+            urid, room_name, created_at) 
+            VALUES (?, ?,  now())";
 
         $prepared_statement = $this->connection->prepare($create_query);
 
         $prepared_statement->bind_param(
-            "sss", 
-            $urid, $room_name, $password);
+            "ss", 
+            $urid, $room_name);
         
         $result = $prepared_statement->execute();
     
@@ -411,8 +430,6 @@ class DB_Functions {
                 $tmp['urid'] = $row['urid'];
 
                 $tmp['room_name'] = $row['room_name'];
-
-                $tmp['password'] = $row['room_password'];
 
                 $tmp['created_at'] = $row['created_at'];
 

@@ -15,9 +15,6 @@ public class User implements Serializable {
         this.username = username;
     }
 
-    public User(String phone_number, String userName, Object o) {
-    }
-
     public String getPhone_number() {
         return phone_number;
     }

@@ -25,8 +25,8 @@ public class ChatRoomsAdapter extends RecyclerView.Adapter<ChatRoomsAdapter.View
     private ArrayList<ChatRoom> chatRoomArrayList;
     private static String today;
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView name, message, timestamp, count;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        public final TextView name, message, timestamp, count;
 
         public ViewHolder(View view) {
             super(view);
@@ -46,7 +46,7 @@ public class ChatRoomsAdapter extends RecyclerView.Adapter<ChatRoomsAdapter.View
         today = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
     }
 
-    //@Override
+    @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.chat_rooms_list_row, parent, false);
@@ -54,7 +54,7 @@ public class ChatRoomsAdapter extends RecyclerView.Adapter<ChatRoomsAdapter.View
         return new ViewHolder(itemView);
     }
 
-    //@Override
+    @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         ChatRoom chatRoom = chatRoomArrayList.get(position);
         holder.name.setText(chatRoom.getName());
@@ -69,7 +69,7 @@ public class ChatRoomsAdapter extends RecyclerView.Adapter<ChatRoomsAdapter.View
         holder.timestamp.setText(getTimeStamp(chatRoom.getTimestamp()));
     }
 
-    //@Override
+    @Override
     public int getItemCount() {
         return chatRoomArrayList.size();
     }
