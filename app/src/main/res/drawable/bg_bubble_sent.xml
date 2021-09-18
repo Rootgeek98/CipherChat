@@ -5,7 +5,7 @@
 
     <!-- view background color -->
     <solid
-        android:color="@color/bg_bubble_sent" >
+        android:color="@color/cyprus" >
     </solid>
 
 
@@ -20,7 +20,9 @@
 
     <!-- Here is the corner radius -->
     <corners
-        android:radius="5dp"   >
+        android:radius="16dip"   >
     </corners>
+
+    <stroke android:width="4dip" android:color="@color/cyprus" />
 
 </shape>

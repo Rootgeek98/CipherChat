@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/chat"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".activity.ChatRoomActivity"
     tools:showIn="@layout/activity_chat_room">
@@ -19,25 +20,33 @@
         android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="#0000"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
         android:weightSum="4">
 
         <EditText android:id="@+id/message"
             android:layout_width="0dp"
+            android:width="360dp"
+            android:height="48dp"
             android:hint="Enter message"
             android:paddingLeft="10dp"
             android:backgroundTint="@null"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="16dp"
             android:layout_marginLeft="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/rounded_text_box"
             android:lines="1"
             android:layout_height="wrap_content"
-            android:layout_weight="3" />
+            android:layout_weight="3"
+            android:textColor="@color/whitesmoke"
+            android:textColorHint="@color/whitesmoke"/>
 
         <Button android:id="@+id/btn_send"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@drawable/rounded_buttons"
             android:backgroundTint="@color/blue_lagoon"
             android:text="SEND"
             android:textSize="16dp"
