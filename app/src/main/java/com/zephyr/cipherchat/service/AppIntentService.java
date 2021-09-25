@@ -44,6 +44,7 @@ public class AppIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        assert intent != null;
         String key = intent.getStringExtra(KEY);
         switch (key) {
             case SUBSCRIBE:
@@ -70,7 +71,7 @@ public class AppIntentService extends IntentService {
         try {
             token = FirebaseInstanceId.getInstance().getToken();
 
-            Log.e(TAG, "FCM Registration Token: " + token);
+            Log.d(TAG, "FCM Registration Token: " + token);
 
             // sending the registration id to our server
             sendRegistrationToServer(token);
@@ -99,7 +100,7 @@ public class AppIntentService extends IntentService {
 
         String endPoint = EndPoints.USER.replace("_PHONE_NUMBER_", user.getPhone_number());
 
-        Log.e(TAG, "endpoint: " + endPoint);
+        Log.i(TAG, "endpoint: " + endPoint);
 
         StringRequest strReq = new StringRequest(Request.Method.PUT,
                 endPoint, new Response.Listener<String>() {
@@ -130,8 +131,8 @@ public class AppIntentService extends IntentService {
             @Override
             public void onErrorResponse(VolleyError error) {
                 NetworkResponse networkResponse = error.networkResponse;
-                Log.e(TAG, "Volley error: " + error.getMessage() + ", code: " + networkResponse);
-                Toast.makeText(getApplicationContext(), "Volley error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.w(TAG, "Volley error: " + error.getMessage() + ", code: " + networkResponse);
+                //Toast.makeText(getApplicationContext(), "Volley error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }) {
 
@@ -140,7 +141,7 @@ public class AppIntentService extends IntentService {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("fcm_registration_id", token);
 
-                Log.e(TAG, "params: " + params.toString());
+                Log.i(TAG, "params: " + params.toString());
                 return params;
             }
         };
@@ -156,7 +157,7 @@ public class AppIntentService extends IntentService {
 
             if (token != null) {
                 FirebaseMessaging.getInstance().subscribeToTopic(topic);
-                Log.e(TAG, "Subscribed to topic: " + topic);
+                Log.i(TAG, "Subscribed to topic: " + topic);
             } else {
                 Log.e(TAG, "error: fcm registration id is null");
             }

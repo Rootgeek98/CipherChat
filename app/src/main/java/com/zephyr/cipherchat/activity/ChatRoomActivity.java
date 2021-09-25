@@ -44,6 +44,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import okhttp3.OkHttpClient;
+
 public class ChatRoomActivity extends AppCompatActivity {
 
     private String TAG = ChatRoomActivity.class.getSimpleName();
@@ -166,7 +168,7 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         String endPoint = EndPoints.CHAT_ROOM_MESSAGE.replace("_ID_", chatRoomId);
 
-        Log.e(TAG, "endpoint: " + endPoint);
+        Log.i(TAG, "endpoint: " + endPoint);
 
         this.inputMessage.setText("");
 
@@ -221,7 +223,7 @@ public class ChatRoomActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 NetworkResponse networkResponse = error.networkResponse;
-                Log.e(TAG, "Volley error: " + error.getMessage() + ", code: " + networkResponse);
+                Log.w(TAG, "Volley error: " + error.getMessage() + ", code: " + networkResponse);
                 Toast.makeText(getApplicationContext(), "Volley error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                 inputMessage.setText(message);
             }
@@ -233,7 +235,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                 params.put("phone_number", AppController.getInstance().getPrefManager().getUser().getPhone_number());
                 params.put("message", message);
 
-                Log.e(TAG, "Params: " + params.toString());
+                Log.d(TAG, "Params: " + params.toString());
 
                 return params;
             };
@@ -260,14 +262,14 @@ public class ChatRoomActivity extends AppCompatActivity {
     private void fetchChatThread() {
 
         String endPoint = EndPoints.CHAT_THREAD.replace("_ID_", chatRoomId);
-        Log.e(TAG, "endPoint: " + endPoint);
+        Log.i(TAG, "endPoint: " + endPoint);
 
         StringRequest strReq = new StringRequest(Request.Method.GET,
                 endPoint, new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
-                Log.e(TAG, "response: " + response);
+                Log.d(TAG, "response: " + response);
 
                 try {
                     JSONObject obj = new JSONObject(response);
@@ -316,7 +318,7 @@ public class ChatRoomActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 NetworkResponse networkResponse = error.networkResponse;
-                Log.e(TAG, "Volley error: " + error.getMessage() + ", code: " + networkResponse);
+                Log.w(TAG, "Volley error: " + error.getMessage() + ", code: " + networkResponse);
                 Toast.makeText(getApplicationContext(), "Volley error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

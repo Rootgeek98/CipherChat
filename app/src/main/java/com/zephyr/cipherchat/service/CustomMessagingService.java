@@ -37,30 +37,28 @@ public class CustomMessagingService extends FirebaseMessagingService {
     public void onNewToken(@NonNull String s) {
         super.onNewToken(s);
 
-        String refreshedToken = s;
-
         // Saving reg id to shared preferences
-        storeRegIdInPref(refreshedToken);
+        storeRegIdInPref(s);
 
         // sending reg id to your server
-        sendRegistrationToServer(refreshedToken);
+        sendRegistrationToServer(s);
 
         // Notify UI that registration has completed, so the progress indicator can be hidden.
         Intent registrationComplete = new Intent(Config.REGISTRATION_COMPLETE);
-        registrationComplete.putExtra("token", refreshedToken);
+        registrationComplete.putExtra("token", s);
         LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
     }
 
     private void sendRegistrationToServer(final String token) {
         // sending gcm token to server
-        Log.e(TAG, "sendRegistrationToServer: " + token);
+        Log.d(TAG, "sendRegistrationToServer: " + token);
     }
 
     private void storeRegIdInPref(String token) {
         SharedPreferences pref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, 0);
         SharedPreferences.Editor editor = pref.edit();
         editor.putString("regId", token);
-        editor.commit();
+        editor.apply();
     }
 
     /**
@@ -70,15 +68,12 @@ public class CustomMessagingService extends FirebaseMessagingService {
      *                      For Set of keys use data.keySet().
      */
     @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
+    public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         //Log.e(TAG, "From: " + remoteMessage.getFrom());
-
-        if (remoteMessage == null)
-            return;
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
-            Log.e(TAG, "Notification Body: " + remoteMessage.getNotification().getBody());
+            Log.d(TAG, "Notification Body: " + remoteMessage.getNotification().getBody());
             handleNotification(remoteMessage.getNotification().getBody());
         }
 
@@ -93,8 +88,8 @@ public class CustomMessagingService extends FirebaseMessagingService {
                 String flag = remoteMessage.getData().get("flag");
                 String data = remoteMessage.getData().get("data");
 
-                Log.e(TAG, "From: " + remoteMessage.getFrom());
-                Log.e(TAG, "title: " + title);
+                Log.d(TAG, "From: " + remoteMessage.getFrom());
+                Log.d(TAG, "title: " + title);
                 Log.d(TAG, "isBackground: " + isBackground);
                 Log.d(TAG, "flag: " + flag);
                 Log.d(TAG, "data: " + data);
@@ -108,6 +103,7 @@ public class CustomMessagingService extends FirebaseMessagingService {
                     return;
                 }
 
+                assert from != null;
                 if (from.startsWith("/topics/")) {
                     // message received from some topic.
                 } else {
@@ -118,12 +114,12 @@ public class CustomMessagingService extends FirebaseMessagingService {
                     case Config.PUSH_TYPE_CHATROOM:
                         // push notification belongs to a chat room
                         processChatRoomPush(title, isBackground, data);
-                        Log.e(TAG, "Sending message to chat room");
+                        Log.i(TAG, "Sending message to chat room");
                         break;
                     case Config.PUSH_TYPE_USER:
                         // push notification is specific to user
                         processUserMessage(title, isBackground, data);
-                        Log.e(TAG, "Sending message to user");
+                        Log.i(TAG, "Sending message to user");
                         break;
                 }
 
@@ -234,7 +230,7 @@ public class CustomMessagingService extends FirebaseMessagingService {
                 // the user would be having the same message when he was sending
                 // but it might differs in your scenario
                 if (uObj.getString("phone_number").equals(AppController.getInstance().getPrefManager().getUser().getPhone_number())) {
-                    Log.e(TAG, "Skipping the push message as it belongs to same user");
+                    Log.w(TAG, "Skipping the push message as it belongs to same user");
                     return;
                 }
                 User user = new User();

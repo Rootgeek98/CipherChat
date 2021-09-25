@@ -47,6 +47,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -76,8 +77,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
 
-        /**
-         * Check for login session. If not logged in launch Login Activity
+        /*
+         * Check for login session.
+         * If not logged in launch Login Activity
          */
         if (AppController.getInstance().getPrefManager().getUser() == null) {
             logoutUser();
@@ -93,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                     channelName, NotificationManager.IMPORTANCE_DEFAULT));
         }
 
-        /**
+        /*
          * Broadcast receiver calls in two scenarios
          * 1. Fcm registration is completed
          * 2. When new push notification is received
@@ -103,8 +105,8 @@ public class MainActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
 
                 // checking for type intent filter
-                if (intent.getAction().equals(Config.REGISTRATION_COMPLETE)) {
-                    /**
+                if (Objects.equals(intent.getAction(), Config.REGISTRATION_COMPLETE)) {
+                    /*
                      * Fcm successfully registered
                      * now subscribe to `global` topic to receive app wide notifications
                      */
@@ -112,9 +114,9 @@ public class MainActivity extends AppCompatActivity {
 
                     subscribeToGlobalTopic();
 
-                } else if (intent.getAction().equals(Config.SENT_TOKEN_TO_SERVER)) {
+                } else if (Objects.equals(intent.getAction(), Config.SENT_TOKEN_TO_SERVER)) {
                     // fcm registration id is stored in our server's MySQL
-                    Log.e(TAG, "FCM registration id is sent to our server");
+                    Log.i(TAG, "FCM registration id is sent to our server");
 
                 } else if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
                     // new push notification is received
@@ -142,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }));
 
-        /**
+        /*
          * Always check for google play services availability before
          * proceeding further with GCM
          * */
@@ -190,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences pref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, 0);
         String regId = pref.getString("regId", null);
 
-        Log.e(TAG, "Firebase reg id: " + regId);
+        Log.d(TAG, "Firebase reg id: " + regId);
     }
 
     /**
@@ -221,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(String response) {
-                Log.e(TAG, "response: " + response);
+                Log.d(TAG, "response: " + response);
 
                 try {
                     JSONObject obj = new JSONObject(response);
@@ -346,7 +348,7 @@ public class MainActivity extends AppCompatActivity {
                 apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                         .show();
             } else {
-                Log.i(TAG, "This device is not supported. Google Play Services not installed!");
+                Log.w(TAG, "This device is not supported. Google Play Services not installed!");
                 Toast.makeText(getApplicationContext(), "This device is not supported. Google Play Services not installed!", Toast.LENGTH_LONG).show();
                 finish();
             }
@@ -364,11 +366,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case R.id.action_logout:
-                AppController.getInstance().logout();
-                appPreferenceManager.setLogin(false);
-                break;
+        if (menuItem.getItemId() == R.id.action_logout) {
+            AppController.getInstance().logout();
+            appPreferenceManager.setLogin(false);
         }
         return super.onOptionsItemSelected(menuItem);
     }
