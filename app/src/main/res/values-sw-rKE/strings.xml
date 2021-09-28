@@ -13,7 +13,7 @@
     <string name="btn_logout">Ondoka</string>
     <string name="btn_dashboard">Chats</string>
     <string name="welcome">Karibu kwa CipherChat</string>
-    <string name="create_account">Kufungua Akaunti ......</string>
+    <string name="create_account">Fungua Akaunti</string>
     <string name="firstname">Jina la kwanza</string>
     <string name="lastname">Jina la mwisho</string>
     <string name="username">Jina la sajili</string>
