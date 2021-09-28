@@ -129,26 +129,31 @@ class DB_Functions {
         if ($retrieve) {
 
             $user = $prepared_statement->get_result()->fetch_assoc(); // Fetch Database Results
+            
+            if ($user) {
+                
+                $check_password = password_verify($password, $user['encrypted_password']);
 
-            $check_password = password_verify($password, $user['encrypted_password']);
-
-            if ($check_password > 0) { // User Authentication Details are correct
-
-                //return $user;
-
-                $response["error"] = FALSE;
-
-                $response["user"]["firstname"] = $user["firstname"];
+                if ($check_password > 0) { // User Authentication Details are correct
     
-                $response["user"]["lastname"] = $user["lastname"];
+                    //return $user;
     
-                $response["user"]["username"] = $user["username"];
+                    $response["error"] = FALSE;
     
-                $response["user"]["phone_number"] = $user["phone_number"];
-    
-                $response["user"]["password"] = $user["encrypted_password"];
-    
-                $response["user"]["created_at"] = $user["created_at"];
+                    $response["user"]["firstname"] = $user["firstname"];
+        
+                    $response["user"]["lastname"] = $user["lastname"];
+        
+                    $response["user"]["username"] = $user["username"];
+        
+                    $response["user"]["phone_number"] = $user["phone_number"];
+        
+                    $response["user"]["password"] = $user["encrypted_password"];
+        
+                    $response["user"]["created_at"] = $user["created_at"];
+                    
+                }
+                
 
             } else { //User Authentication Details are incorrect
 
