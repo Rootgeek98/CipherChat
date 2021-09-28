@@ -17,40 +17,42 @@
         android:scrollbars="vertical" />
 
     <LinearLayout
-        android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="#0000"
         android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:backgroundTint="#0000"
         android:orientation="horizontal"
         android:weightSum="4">
 
-        <EditText android:id="@+id/message"
+        <EditText
+            android:id="@+id/message"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_weight="3"
             android:width="360dp"
             android:height="48dp"
-            android:hint="Enter message"
-            android:paddingLeft="10dp"
-            android:backgroundTint="@null"
-            android:layout_marginRight="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginBottom="16dp"
             android:background="@drawable/rounded_text_box"
+            android:backgroundTint="@null"
+            android:hint="Enter message"
             android:lines="1"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
+            android:paddingLeft="10dp"
             android:textColor="@color/whitesmoke"
-            android:textColorHint="@color/whitesmoke"/>
+            android:textColorHint="@color/whitesmoke" />
 
-        <Button android:id="@+id/btn_send"
+        <Button
+            android:id="@+id/btn_send"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/rounded_buttons"
             android:backgroundTint="@color/blue_lagoon"
             android:text="SEND"
-            android:textSize="16dp"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:textSize="16dp" />
 
     </LinearLayout>
 

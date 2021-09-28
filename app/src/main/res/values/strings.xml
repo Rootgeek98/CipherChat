@@ -10,7 +10,7 @@
     <string name="success_signup">Access Granted</string>
     <string name="signup_error">Something Wrong Happened during Registration. Please Confirm that you have entered your correct Personal Details</string>
     <string name="btn_logout">Logout</string>
-    <string name="btn_dashboard">Dashboard</string>
+    <string name="btn_dashboard">Chats</string>
     <string name="welcome">Welcome to Cipher Chat</string>
     <string name="create_account">Create Account</string>
     <string name="firstname">Firstname</string>
