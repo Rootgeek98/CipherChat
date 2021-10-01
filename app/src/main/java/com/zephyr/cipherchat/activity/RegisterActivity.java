@@ -104,7 +104,8 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),
                             empty_details, Toast.LENGTH_LONG)
                             .show();
-                } else if (password.length() < 8){
+                }
+                else if (password.length() < 8){
                     Toast.makeText(getApplicationContext(),
                             short_password, Toast.LENGTH_LONG)
                             .show();
@@ -159,7 +160,7 @@ public class RegisterActivity extends AppCompatActivity {
         showDialog();
 
         StringRequest strReq = new StringRequest(Request.Method.POST,
-                EndPoints.CREATE_ACCOUNT, new Response.Listener<String>() {
+                EndPoints.SIGNUP, new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {

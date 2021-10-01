@@ -63,7 +63,7 @@ public class AppIntentService extends IntentService {
     }
 
     /**
-     * Registering with FCM and obtaining the gcm registration id
+     * Registering with FCM and obtaining the fcm registration id
      */
     private void registerFCM() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
