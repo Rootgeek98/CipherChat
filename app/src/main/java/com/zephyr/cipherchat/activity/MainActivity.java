@@ -333,7 +333,7 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
     }
 
-    // starting the service to register with GCM
+    // starting the service to register with FCM
     private void registerFCM() {
         Intent intent = new Intent(this, AppIntentService.class);
         intent.putExtra("key", "register");

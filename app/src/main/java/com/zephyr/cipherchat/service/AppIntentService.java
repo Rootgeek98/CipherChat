@@ -44,7 +44,6 @@ public class AppIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        assert intent != null;
         String key = intent.getStringExtra(KEY);
         switch (key) {
             case SUBSCRIBE:
@@ -57,7 +56,7 @@ public class AppIntentService extends IntentService {
                 unsubscribeFromTopic(topic1);
                 break;
             default:
-                // if key is not specified, register with GCM
+                // if key is not specified, register with FCM
                 registerFCM();
         }
     }

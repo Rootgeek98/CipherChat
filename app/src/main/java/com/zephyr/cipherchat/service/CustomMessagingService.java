@@ -17,6 +17,7 @@ import com.zephyr.cipherchat.activity.ChatRoomActivity;
 import com.zephyr.cipherchat.activity.MainActivity;
 import com.zephyr.cipherchat.app.AppController;
 import com.zephyr.cipherchat.app.Config;
+import com.zephyr.cipherchat.app.EndPoints;
 import com.zephyr.cipherchat.model.Message;
 import com.zephyr.cipherchat.model.User;
 import com.zephyr.cipherchat.utils.NotificationUtils;
@@ -44,9 +45,9 @@ public class CustomMessagingService extends FirebaseMessagingService {
         sendRegistrationToServer(s);
 
         // Notify UI that registration has completed, so the progress indicator can be hidden.
-        Intent registrationComplete = new Intent(Config.REGISTRATION_COMPLETE);
-        registrationComplete.putExtra("token", s);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
+        //Intent registrationComplete = new Intent(Config.REGISTRATION_COMPLETE);
+        //registrationComplete.putExtra("token", s);
+        //LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
     }
 
     private void sendRegistrationToServer(final String token) {
