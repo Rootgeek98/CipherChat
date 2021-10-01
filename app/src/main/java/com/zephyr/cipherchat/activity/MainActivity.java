@@ -105,22 +105,26 @@ public class MainActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
 
                 // checking for type intent filter
-                if (Objects.equals(intent.getAction(), Config.REGISTRATION_COMPLETE)) {
+                if (intent.getAction().equals(Config.REGISTRATION_COMPLETE)) {
                     /*
                      * Fcm successfully registered
                      * now subscribe to `global` topic to receive app wide notifications
                      */
-                    displayFirebaseRegId();
+                    String token = intent.getStringExtra("token");
+
+                    Log.i(TAG, "FCM Token: "+token);
+                    //displayFirebaseRegId();
 
                     subscribeToGlobalTopic();
 
-                } else if (Objects.equals(intent.getAction(), Config.SENT_TOKEN_TO_SERVER)) {
+                } else if (intent.getAction().equals(Config.SENT_TOKEN_TO_SERVER)) {
                     // fcm registration id is stored in our server's MySQL
-                    Log.i(TAG, "FCM registration id is sent to our server");
+                    Log.i(TAG, "FCM registration id is stored in server");
 
                 } else if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
                     // new push notification is received
                     handlePushNotification(intent);
+                    Log.d(TAG, "Push Notification is received");
                 }
             }
         };
@@ -130,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.addOnItemTouchListener(new ChatRoomsAdapter.RecyclerTouchListener(getApplicationContext(), recyclerView, new ChatRoomsAdapter.ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                // when chat is clicked, launch full chat thread activity
+                // when chat room is clicked, launch full chat thread activity
                 ChatRoom chatRoom = chatRoomArrayList.get(position);
                 Intent intent = new Intent(MainActivity.this, ChatRoomActivity.class);
                 intent.putExtra("urid", chatRoom.getId());
@@ -146,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
 
         /*
          * Always check for google play services availability before
-         * proceeding further with GCM
+         * proceeding further with FCM
          * */
         if (checkPlayServices()) {
             registerFCM();
@@ -188,12 +192,14 @@ public class MainActivity extends AppCompatActivity {
      * Fetches reg id from shared preferences
      * and displays on the screen
      */
+    /*
     private void displayFirebaseRegId() {
-        SharedPreferences pref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, 0);
+        SharedPreferences pref = getApplicationContext().getSharedPreferences(AppPreferenceManager.PREF_NAME, 0);
         String regId = pref.getString("regId", null);
 
         Log.d(TAG, "Firebase reg id: " + regId);
     }
+     */
 
     /**
      * Updates the chat list unread count and the last message

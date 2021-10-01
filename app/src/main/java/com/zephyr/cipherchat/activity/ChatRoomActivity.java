@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -43,6 +44,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import okhttp3.OkHttpClient;
 
@@ -118,6 +121,8 @@ public class ChatRoomActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        content();
 
         // registering the receiver for new notification
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
@@ -325,5 +330,22 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         //Adding request to request queue
         AppController.getInstance().addToRequestQueue(strReq);
+    }
+    public void content() {
+
+        fetchChatThread();
+
+        refresh(0);
+
+    }
+
+    private void refresh (int milliseconds) {
+
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                content();
+            }
+        };
     }
 }

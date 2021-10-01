@@ -31,8 +31,6 @@ public class AppIntentService extends IntentService {
 
     private static final String TAG = AppIntentService.class.getSimpleName();
 
-    private String token;
-
     public AppIntentService() {
         super(TAG);
     }
@@ -68,22 +66,23 @@ public class AppIntentService extends IntentService {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         try {
-            token = FirebaseInstanceId.getInstance().getToken();
+            String token = FirebaseInstanceId.getInstance().getToken();
 
-            Log.d(TAG, "FCM Registration Token: " + token);
+            Log.i(TAG, "FCM Registration Token: " + token);
 
             // sending the registration id to our server
             sendRegistrationToServer(token);
 
             sharedPreferences.edit().putBoolean(Config.SENT_TOKEN_TO_SERVER, true).apply();
+
         } catch (Exception e) {
+
             Log.e(TAG, "Failed to complete token refresh", e);
 
             sharedPreferences.edit().putBoolean(Config.SENT_TOKEN_TO_SERVER, false).apply();
         }
         // Notify UI that registration has completed, so the progress indicator can be hidden.
         Intent registrationComplete = new Intent(Config.REGISTRATION_COMPLETE);
-        registrationComplete.putExtra("token", token);
         LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
     }
 
@@ -101,7 +100,7 @@ public class AppIntentService extends IntentService {
 
         Log.i(TAG, "endpoint: " + endPoint);
 
-        StringRequest strReq = new StringRequest(Request.Method.PUT,
+        StringRequest strReq = new StringRequest(Request.Method.POST,
                 endPoint, new Response.Listener<String>() {
 
             @Override
@@ -117,7 +116,8 @@ public class AppIntentService extends IntentService {
                         Intent registrationComplete = new Intent(Config.SENT_TOKEN_TO_SERVER);
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(registrationComplete);
                     } else {
-                        Toast.makeText(getApplicationContext(), "Unable to send gcm registration id to our sever. " + obj.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
+                        Log.e(TAG, "Unable to send fcm registration id to our sever. "+ obj.getJSONObject("error").getString("message") );
+                        Toast.makeText(getApplicationContext(), "Unable to send fcm registration id to our sever. " + obj.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
                     }
 
                 } catch (JSONException e) {
@@ -141,6 +141,7 @@ public class AppIntentService extends IntentService {
                 params.put("fcm_registration_id", token);
 
                 Log.i(TAG, "params: " + params.toString());
+
                 return params;
             }
         };

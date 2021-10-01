@@ -164,7 +164,8 @@ public class LoginActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     // JSON error
                     e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Error occurred during login. Please try again.", Toast.LENGTH_LONG).show();
+                    Log.e(TAG, "Json error: " + e.getMessage());
                 }
             }
         }, new Response.ErrorListener() {

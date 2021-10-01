@@ -17,6 +17,7 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Patterns;
@@ -39,6 +40,8 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class NotificationUtils {
 
@@ -77,13 +80,13 @@ public class NotificationUtils {
         if (TextUtils.isEmpty(message))
             return;
 
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         final PendingIntent resultPendingIntent =
                 PendingIntent.getActivity(
                         mContext,
                         0,
                         intent,
-                        PendingIntent.FLAG_CANCEL_CURRENT
+                        PendingIntent.FLAG_UPDATE_CURRENT
                 );
         final NotificationCompat.Builder mBuilder= new NotificationCompat.Builder(
                 mContext, channelId);

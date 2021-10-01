@@ -18,6 +18,7 @@ import com.zephyr.cipherchat.activity.MainActivity;
 import com.zephyr.cipherchat.app.AppController;
 import com.zephyr.cipherchat.app.Config;
 import com.zephyr.cipherchat.app.EndPoints;
+import com.zephyr.cipherchat.helper.AppPreferenceManager;
 import com.zephyr.cipherchat.model.Message;
 import com.zephyr.cipherchat.model.User;
 import com.zephyr.cipherchat.utils.NotificationUtils;
@@ -35,31 +36,8 @@ public class CustomMessagingService extends FirebaseMessagingService {
     private NotificationUtils notificationUtils;
 
     @Override
-    public void onNewToken(@NonNull String s) {
-        super.onNewToken(s);
-
-        // Saving reg id to shared preferences
-        storeRegIdInPref(s);
-
-        // sending reg id to your server
-        sendRegistrationToServer(s);
-
-        // Notify UI that registration has completed, so the progress indicator can be hidden.
-        //Intent registrationComplete = new Intent(Config.REGISTRATION_COMPLETE);
-        //registrationComplete.putExtra("token", s);
-        //LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
-    }
-
-    private void sendRegistrationToServer(final String token) {
-        // sending gcm token to server
-        Log.d(TAG, "sendRegistrationToServer: " + token);
-    }
-
-    private void storeRegIdInPref(String token) {
-        SharedPreferences pref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, 0);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putString("regId", token);
-        editor.apply();
+    public void onNewToken(@NonNull String token) {
+        super.onNewToken(token);
     }
 
     /**
@@ -70,7 +48,6 @@ public class CustomMessagingService extends FirebaseMessagingService {
      */
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
-        //Log.e(TAG, "From: " + remoteMessage.getFrom());
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
@@ -80,7 +57,6 @@ public class CustomMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            //Log.e(TAG, "Data Payload: " + remoteMessage.getData().toString());
 
             try {
                 String from = remoteMessage.getFrom();
@@ -136,10 +112,6 @@ public class CustomMessagingService extends FirebaseMessagingService {
             Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
             pushNotification.putExtra("message", message);
             LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-
-            // play notification sound
-            NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
-            notificationUtils.playNotificationSound();
         }else{
             // If the app is in background, firebase itself handles the notification
         }
@@ -182,14 +154,10 @@ public class CustomMessagingService extends FirebaseMessagingService {
                     pushNotification.putExtra("type", Config.PUSH_TYPE_USER);
                     pushNotification.putExtra("message", message);
                     LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-
-                    // play notification sound
-                    NotificationUtils notificationUtils = new NotificationUtils();
-                    notificationUtils.playNotificationSound();
                 } else {
 
-                    // app is in background. show the message in notification try
-                    Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
+                    Intent resultIntent = new Intent(getApplicationContext(), ChatRoomActivity.class);
+                    resultIntent.putExtra("message", message);
 
                     // check for push notification image attachment
                     if (TextUtils.isEmpty(imageUrl)) {
@@ -252,11 +220,11 @@ public class CustomMessagingService extends FirebaseMessagingService {
                     LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
 
                     // play notification sound
-                    NotificationUtils notificationUtils = new NotificationUtils();
+                    //NotificationUtils notificationUtils = new NotificationUtils();
                     //notificationUtils.playNotificationSound();
                 } else {
 
-                    // app is in background. show the message in notification try
+                    // app is in background. show the message in notification tray
                     Intent resultIntent = new Intent(getApplicationContext(), ChatRoomActivity.class);
                     resultIntent.putExtra("room_id", chatRoomId);
                     showNotificationMessage(getApplicationContext(), String.valueOf(title), user.getUsername() + " : " + message.getMessage(), message.getSentAt(), resultIntent);
@@ -287,7 +255,7 @@ public class CustomMessagingService extends FirebaseMessagingService {
             String timeStamp,
             Intent intent) {
         notificationUtils = new NotificationUtils(context);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         notificationUtils.showNotificationMessage(title, message, timeStamp, intent);
     }
 
@@ -309,7 +277,7 @@ public class CustomMessagingService extends FirebaseMessagingService {
             Intent intent,
             String imageUrl) {
         notificationUtils = new NotificationUtils(context);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         notificationUtils.showNotificationMessage(title, message, timeStamp, intent, imageUrl);
     }
 }

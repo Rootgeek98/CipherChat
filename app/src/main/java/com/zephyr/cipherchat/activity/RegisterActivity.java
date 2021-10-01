@@ -80,14 +80,6 @@ public class RegisterActivity extends AppCompatActivity {
         // Session manager
         appPreferenceManager = new AppPreferenceManager(getApplicationContext());
 
-        // Check if user is already logged in or not
-        if (AppController.getInstance().getPrefManager().getUser() != null) {
-            // User is already logged in. Take him to main activity
-            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        }
-
         // Register Button Click event
         btnSignup.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -197,7 +189,8 @@ public class RegisterActivity extends AppCompatActivity {
                                 signup_error, Toast.LENGTH_LONG).show();
                     }
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "Error occurred during registration. Please try again.", Toast.LENGTH_LONG).show();
+                    Log.e(TAG, "Json error: " + e.getMessage());
                 }
 
             }

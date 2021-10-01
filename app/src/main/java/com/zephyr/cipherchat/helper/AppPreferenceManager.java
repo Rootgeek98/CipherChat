@@ -31,7 +31,7 @@ public class AppPreferenceManager {
     int PRIVATE_MODE = 0;
 
     // Shared preferences file name
-    private static final String PREF_NAME = "CipherChat";
+    private static final String PREF_NAME = "cipher_chat";
 
     private static final String KEY_IS_LOGGEDIN = "isLoggedIn";
 
@@ -81,9 +81,14 @@ public class AppPreferenceManager {
             username = pref.getString(KEY_USERNAME, null);
 
             User user = new User(phone_number, firstname, lastname, username);
+
             return user;
+
+        } else {
+
+            return null;
+
         }
-        return null;
     }
 
     public void addNotification(String notification) {

@@ -25,8 +25,6 @@ public class Config {
     public static final String PUSH_NOTIFICATION = "PushNotifications";
     public static final String CHANNEL_NAME = "FCMPush";
 
-    public static final String SHARED_PREF = "ah_firebase";
-
     // type of push messages
     public static final int PUSH_TYPE_CHATROOM = 1;
     public static final int PUSH_TYPE_USER = 2;
