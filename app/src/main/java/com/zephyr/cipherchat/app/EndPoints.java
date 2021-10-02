@@ -16,6 +16,7 @@ public class EndPoints {
     public static final String SIGNUP = BASE_URL + "/user/signup";
     public static final String USER = BASE_URL + "/user/_PHONE_NUMBER_";
     public static final String CHAT_ROOMS = BASE_URL + "/chat_rooms";
+    public static final String CREATE_CHAT_ROOM = BASE_URL + "/chat_rooms/create_chat_room";
     public static final String CHAT_THREAD = BASE_URL + "/chat_rooms/_ID_";
     public static final String CHAT_ROOM_MESSAGE = BASE_URL + "/chat_rooms/_ID_/message";
 }

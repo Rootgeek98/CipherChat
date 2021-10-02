@@ -376,6 +376,13 @@ public class MainActivity extends AppCompatActivity {
             AppController.getInstance().logout();
             appPreferenceManager.setLogin(false);
         }
+        if (menuItem.getItemId() == R.id.action_create_chat_room) {
+            // Launching the Create chat room activity
+            Intent intent = new Intent(MainActivity.this, CreateChatRoom.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
         return super.onOptionsItemSelected(menuItem);
     }
 
