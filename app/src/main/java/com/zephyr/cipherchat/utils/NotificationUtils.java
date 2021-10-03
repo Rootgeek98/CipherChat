@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.AudioAttributes;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -45,8 +46,6 @@ import java.util.TimerTask;
 
 public class NotificationUtils {
 
-    NotificationManager notificationManager;
-
     private static String TAG = NotificationUtils.class.getSimpleName();
 
     private Context mContext;
@@ -77,10 +76,11 @@ public class NotificationUtils {
         final int icon = R.drawable.notification_logo;
 
         // Check for empty push message
-        if (TextUtils.isEmpty(message))
+        if (TextUtils.isEmpty(message)) {
             return;
+        }
 
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         final PendingIntent resultPendingIntent =
                 PendingIntent.getActivity(
                         mContext,
@@ -132,6 +132,7 @@ public class NotificationUtils {
                     alarmSound);
             playNotificationSound();
         }
+
     }
 
     /**
@@ -156,8 +157,9 @@ public class NotificationUtils {
         String channelId = Config.PUSH_NOTIFICATION;
         String channelName = Config.CHANNEL_NAME;
 
-        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         try {
+            NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+            /*
             if(Config.appendNotificationMessages){
                 // store the notification in shared pref first
                 AppController.getInstance().getPrefManager().addNotification(message);
@@ -170,9 +172,12 @@ public class NotificationUtils {
                 for (int i = messages.size() - 1; i >= 0; i--) {
                     inboxStyle.addLine(messages.get(i));
                 }
+                inboxStyle.addLine(message);
             }else{
                 inboxStyle.addLine(message);
             }
+             */
+            inboxStyle.addLine(message);
             Notification notification;
             notification = mBuilder.setSmallIcon(icon).setTicker(title).setWhen(0)
                     .setAutoCancel(true)
@@ -182,7 +187,7 @@ public class NotificationUtils {
                     .setSound(alarmSound)
                     .setStyle(inboxStyle)
                     .setWhen(getTimeMilliSec(timeStamp))
-                    //.setSmallIcon(R.drawable.ic_notification_small)
+                    .setSmallIcon(R.drawable.notification_logo)
                     .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), icon))
                     .build();
             NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -190,9 +195,11 @@ public class NotificationUtils {
 
             // For android Oreo and above  notification channel is needed.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                // Set importance to IMPORTANCE_LOW to mute notification sound on Android 8.0 and above
                 NotificationChannel channel = new NotificationChannel(channelId,
                         channelName,
-                        NotificationManager.IMPORTANCE_DEFAULT);
+                        NotificationManager.IMPORTANCE_LOW);
+
                 notificationManager.createNotificationChannel(channel);
             }
 
@@ -239,7 +246,7 @@ public class NotificationUtils {
                     .setContentIntent(resultPendingIntent)
                     .setSound(alarmSound)
                     .setColor(Color.GREEN)
-                    .setSmallIcon(icon)
+                    .setSmallIcon(R.drawable.notification_logo)
                     .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), icon))
                     .build();
             NotificationManager notificationManager =
@@ -247,9 +254,11 @@ public class NotificationUtils {
 
             // For android Oreo and above  notification channel is needed.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                // Set importance to IMPORTANCE_LOW to mute notification sound on Android 8.0 and above
                 NotificationChannel channel = new NotificationChannel(channelId,
                         channelName,
-                        NotificationManager.IMPORTANCE_DEFAULT);
+                        NotificationManager.IMPORTANCE_LOW);
+
                 notificationManager.createNotificationChannel(channel);
             }
             notificationManager.notify(Config.NOTIFICATION_ID_BIG_IMAGE , notification);
@@ -286,8 +295,9 @@ public class NotificationUtils {
     public void playNotificationSound() {
         try {
             Uri alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
-                    + "://" + mContext.getPackageName() + "/raw/notification");
-            Ringtone r = RingtoneManager.getRingtone(mContext, alarmSound);
+                    + "://" + AppController.getInstance().getApplicationContext().getPackageName()
+                    + "/raw/notification");
+            Ringtone r = RingtoneManager.getRingtone(AppController.getInstance().getApplicationContext(), alarmSound);
             r.play();
         } catch (Exception e) {
             e.printStackTrace();
@@ -337,9 +347,8 @@ public class NotificationUtils {
 
     /**
      * Clears notification tray messages
-     * @param context
      */
-    public static void clearNotifications(Context context) {
+    public static void clearNotifications() {
         NotificationManager notificationManager = (NotificationManager) AppController.getInstance().getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
     }

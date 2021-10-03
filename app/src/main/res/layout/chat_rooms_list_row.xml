@@ -47,7 +47,7 @@
         android:background="@drawable/bg_circle"
         android:gravity="center"
         android:text="5"
-        android:textColor="@color/blue_lagoon"
+        android:textColor="@color/white"
         android:textSize="10dp" />
 
 </RelativeLayout>

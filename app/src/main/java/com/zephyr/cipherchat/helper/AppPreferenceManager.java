@@ -31,7 +31,7 @@ public class AppPreferenceManager {
     int PRIVATE_MODE = 0;
 
     // Shared preferences file name
-    private static final String PREF_NAME = "cipher_chat";
+    public static final String PREF_NAME = "cipher_chat";
 
     private static final String KEY_IS_LOGGEDIN = "isLoggedIn";
 

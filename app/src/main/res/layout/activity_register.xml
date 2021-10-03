@@ -161,7 +161,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:ems="10"
-        android:hint="@string/_254712345678"
+        android:hint="@string/contact"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/etSignupPassword"
         app:layout_constraintEnd_toEndOf="parent"

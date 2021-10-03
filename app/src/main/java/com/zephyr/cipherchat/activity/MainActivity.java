@@ -113,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
                     String token = intent.getStringExtra("token");
 
                     Log.i(TAG, "FCM Token: "+token);
-                    //displayFirebaseRegId();
 
                     subscribeToGlobalTopic();
 
@@ -128,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-
 
 
         recyclerView.addOnItemTouchListener(new ChatRoomsAdapter.RecyclerTouchListener(getApplicationContext(), recyclerView, new ChatRoomsAdapter.ClickListener() {
@@ -173,9 +171,12 @@ public class MainActivity extends AppCompatActivity {
         // simply update the UI unread messages count
         if (type == Config.PUSH_TYPE_CHATROOM) {
             Message message = (Message) intent.getSerializableExtra("message");
-            String chatRoomId = intent.getStringExtra("urid");
+            String chatRoomId = intent.getStringExtra("room_id");
+            Log.d(TAG, "Message: "+ message);
+            Log.d(TAG, "ChatRoom ID: "+ chatRoomId);
 
             if (message != null && chatRoomId != null) {
+                Log.d(TAG, "Updating UI unread messages count");
                 updateRow(chatRoomId, message);
             }
         } else if (type == Config.PUSH_TYPE_USER) {
@@ -247,7 +248,6 @@ public class MainActivity extends AppCompatActivity {
                             cr.setTimestamp(chatRoomsObj.getString("created_at"));
                             chatRoomArrayList.add(cr);
                         }
-
                     } else {
                         // error in fetching chat rooms
                         Toast.makeText(getApplicationContext(), "" + obj.getJSONObject("error").getString("message"), Toast.LENGTH_LONG).show();
@@ -330,7 +330,7 @@ public class MainActivity extends AppCompatActivity {
                 new IntentFilter(Config.PUSH_NOTIFICATION));
 
         // clear the notification area when the app is opened
-        NotificationUtils.clearNotifications(getApplicationContext());
+        NotificationUtils.clearNotifications();
     }
 
     @Override
@@ -376,11 +376,23 @@ public class MainActivity extends AppCompatActivity {
             AppController.getInstance().logout();
             appPreferenceManager.setLogin(false);
         }
+        if (menuItem.getItemId() == R.id.action_dashboard) {
+            // Starting Dashboard activity
+            Intent refresh = new Intent(this, DashboardActivity.class);
+            startActivity(refresh);
+            finish();
+        }
         if (menuItem.getItemId() == R.id.action_create_chat_room) {
             // Launching the Create chat room activity
-            Intent intent = new Intent(MainActivity.this, CreateChatRoom.class);
+            Intent intent = new Intent(this, CreateChatRoom.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+            finish();
+        }
+        if (menuItem.getItemId() == R.id.action_refresh) {
+            // Refreshing Main activity
+            Intent refresh = new Intent(this, MainActivity.class);
+            startActivity(refresh);
             finish();
         }
         return super.onOptionsItemSelected(menuItem);

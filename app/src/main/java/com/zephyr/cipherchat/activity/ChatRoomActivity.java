@@ -12,7 +12,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -43,11 +42,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import okhttp3.OkHttpClient;
 
 public class ChatRoomActivity extends AppCompatActivity {
 
@@ -114,8 +108,6 @@ public class ChatRoomActivity extends AppCompatActivity {
                 sendMessage();
             }
         });
-
-        fetchChatThread();
     }
 
     @Override
@@ -128,7 +120,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(Config.PUSH_NOTIFICATION));
 
-        NotificationUtils.clearNotifications(getApplicationContext());
+        NotificationUtils.clearNotifications();
     }
 
     @Override

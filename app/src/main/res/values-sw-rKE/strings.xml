@@ -11,7 +11,7 @@
     <string name="success_signup">Umefanikiwa kufungua akaunti.</string>
     <string name="signup_error">Hitilafu isiyojulikana ilitokea wakati wa usajili. Tafadhali hakikisha umejaza vitambulisho vyako sahihi</string>
     <string name="btn_logout">Ondoka</string>
-    <string name="btn_dashboard">Chats</string>
+    <string name="btn_dashboard">Maelezo</string>
     <string name="welcome">Karibu kwa CipherChat</string>
     <string name="create_account">Fungua Akaunti</string>
     <string name="firstname">Jina la kwanza</string>
@@ -21,15 +21,17 @@
     <string name="confirmpassword">Thibitisha Neno siri</string>
     <string name="btn_create_account">Fungua Akaunti</string>
     <string name="already_have_an_account">Tayari umesajiliwa! Ingia Hapa.</string>
-    <string name="_254712345678">+254712345678</string>
+    <string name="contact">712345678</string>
     <string name="login">Ingia kwa akaunti yako</string>
     <string name="don_t_have_an_account">Sio mwanachama? Fungua akaunti.</string>
     <string name="default_notification_channel_id">PushNotifications</string>
     <string name="action_settings">Mipangilio</string>
-    <string name="create_chat_room">Create Chat Room</string>
-    <string name="roomname">RoomName</string>
-    <string name="create">Create</string>
-    <string name="creating_chat_room">Creating Chat Room</string>
-    <string name="success_create_chat_room">Chat room successfully created</string>
-    <string name="new_chat_room">New Chat Room</string>
+    <string name="create_chat_room">Unda Chumba cha Gumzo</string>
+    <string name="roomname">Jina la Chumba</string>
+    <string name="create">Unda</string>
+    <string name="creating_chat_room">Kuunda Chumba cha Gumzo</string>
+    <string name="success_create_chat_room">Chumba cha gumzo kimeundwa</string>
+    <string name="new_chat_room">Chumba kipya cha Gumzo</string>
+    <string name="btn_refresh">Onyesha upya</string>
+    <string name="phone_number">Nambari ya Simu</string>
 </resources>

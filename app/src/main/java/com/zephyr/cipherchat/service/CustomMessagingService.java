@@ -2,7 +2,6 @@ package com.zephyr.cipherchat.service;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,16 +16,12 @@ import com.zephyr.cipherchat.activity.ChatRoomActivity;
 import com.zephyr.cipherchat.activity.MainActivity;
 import com.zephyr.cipherchat.app.AppController;
 import com.zephyr.cipherchat.app.Config;
-import com.zephyr.cipherchat.app.EndPoints;
-import com.zephyr.cipherchat.helper.AppPreferenceManager;
 import com.zephyr.cipherchat.model.Message;
 import com.zephyr.cipherchat.model.User;
 import com.zephyr.cipherchat.utils.NotificationUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Map;
 
 
 public class CustomMessagingService extends FirebaseMessagingService {
@@ -154,10 +149,13 @@ public class CustomMessagingService extends FirebaseMessagingService {
                     pushNotification.putExtra("type", Config.PUSH_TYPE_USER);
                     pushNotification.putExtra("message", message);
                     LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
+
+                    // play notification sound
+                    NotificationUtils notificationUtils = new NotificationUtils();
+                    notificationUtils.playNotificationSound();
                 } else {
 
-                    Intent resultIntent = new Intent(getApplicationContext(), ChatRoomActivity.class);
-                    resultIntent.putExtra("message", message);
+                    Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
 
                     // check for push notification image attachment
                     if (TextUtils.isEmpty(imageUrl)) {
@@ -197,7 +195,7 @@ public class CustomMessagingService extends FirebaseMessagingService {
 
                 // skip the message if the message belongs to same user as
                 // the user would be having the same message when he was sending
-                // but it might differs in your scenario
+                // but it might differ in your scenario
                 if (uObj.getString("phone_number").equals(AppController.getInstance().getPrefManager().getUser().getPhone_number())) {
                     Log.w(TAG, "Skipping the push message as it belongs to same user");
                     return;
@@ -220,14 +218,15 @@ public class CustomMessagingService extends FirebaseMessagingService {
                     LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
 
                     // play notification sound
-                    //NotificationUtils notificationUtils = new NotificationUtils();
-                    //notificationUtils.playNotificationSound();
+                    NotificationUtils notificationUtils = new NotificationUtils();
+                    notificationUtils.playNotificationSound();
                 } else {
 
                     // app is in background. show the message in notification tray
                     Intent resultIntent = new Intent(getApplicationContext(), ChatRoomActivity.class);
                     resultIntent.putExtra("room_id", chatRoomId);
-                    showNotificationMessage(getApplicationContext(), String.valueOf(title), user.getUsername() + " : " + message.getMessage(), message.getSentAt(), resultIntent);
+                    showNotificationMessage(getApplicationContext(), title, user.getUsername() + " : " + message.getMessage(), message.getSentAt(), resultIntent);
+
                 }
             } catch (JSONException e) {
                 Log.e(TAG, "json parsing error: " + e.getMessage());
@@ -255,7 +254,7 @@ public class CustomMessagingService extends FirebaseMessagingService {
             String timeStamp,
             Intent intent) {
         notificationUtils = new NotificationUtils(context);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         notificationUtils.showNotificationMessage(title, message, timeStamp, intent);
     }
 
@@ -277,7 +276,7 @@ public class CustomMessagingService extends FirebaseMessagingService {
             Intent intent,
             String imageUrl) {
         notificationUtils = new NotificationUtils(context);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         notificationUtils.showNotificationMessage(title, message, timeStamp, intent, imageUrl);
     }
 }
