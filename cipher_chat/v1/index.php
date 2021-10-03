@@ -23,7 +23,7 @@ $app = new \Slim\Slim();
 /**
  * User Signup
  */
-$app->post('/user/create_account', function() use ($app) {
+$app->post('/user/signup', function() use ($app) {
     // check for required params
     verifyRequiredParams(array('firstname','lastname','username', 'phone_number', 'password'));
  
@@ -63,12 +63,12 @@ $app->post('/user/login', function() use ($app) {
  * Updating user
  *  we use this url to update user's fcm registration id
  */
-$app->put('/user/:id', function($phone_number) use ($app) {
+$app->post('/user/:id', function($phone_number) use ($app) {
     global $app;
  
     verifyRequiredParams(array('fcm_registration_id'));
  
-    $fcm_registration_id = $app->request->put('fcm_registration_id');
+    $fcm_registration_id = $app->request->post('fcm_registration_id');
  
     $db = new DB_Functions();
     $response = $db->updateGcmID($phone_number, $fcm_registration_id);
@@ -81,13 +81,14 @@ $app->put('/user/:id', function($phone_number) use ($app) {
  */
 $app->post('/chat_rooms/create_chat_room', function() use ($app) {
     // check for required params
-    verifyRequiredParams(array('room_name'));
+    verifyRequiredParams(array('room_name', 'password'));
  
     // reading post params
     $room_name = $app->request->post('room_name');
+    $password = $app->request->post('password');
  
     $db = new DB_Functions();
-    $response = $db->createChatRoom($room_name);
+    $response = $db->createChatRoom($room_name, $password);
  
     // echo json response
     echoRespnse(200, $response);
@@ -156,7 +157,7 @@ $app->post('/chat_rooms/:id/message', function($room_id) {
         $data['message'] = $response['message'];
         $data['room_id'] = $room_id;
  
-        $push->setTitle("Firebase Cloud Messaging");
+        $push->setTitle("CipherChat");
         $push->setIsBackground(FALSE);
         $push->setFlag(PUSH_FLAG_CHATROOM);
         $push->setData($data);

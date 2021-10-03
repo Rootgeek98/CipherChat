@@ -47,15 +47,17 @@ class DB_Functions {
         
         $encrypted_password = password_hash($password, PASSWORD_DEFAULT); // Hashes the Password
         
+        $gcm_registration_id = "NULL";
+        
         $create_query = "INSERT INTO users (
-            phone_number, firstname, lastname, username, encrypted_password, created_at) 
-            VALUES (?, ?, ?, ?, ?,  now())";
+            phone_number, firstname, lastname, username, encrypted_password, gcm_registration_id, created_at) 
+            VALUES (?, ?, ?, ?, ?, ?,  now())";
         
         $prepared_statement = $this->connection->prepare($create_query);
         
         $prepared_statement->bind_param(
-            "issss", 
-            $phone_number, $firstname, $lastname, $username, $encrypted_password);
+            "isssss", 
+            $phone_number, $firstname, $lastname, $username, $encrypted_password, $gcm_registration_id);
         
         $result = $prepared_statement->execute();
 
@@ -260,7 +262,7 @@ class DB_Functions {
             
             $response["error"] = false;
 
-            $response["message"] = 'GCM registration ID updated successfully';
+            $response["message"] = 'FCM registration ID updated successfully';
 
         } else { // Failed to update user
             
@@ -396,65 +398,88 @@ class DB_Functions {
      * @param  mixed $password
      * @return void
      */
-    public function createChatRoom($room_name) {
+    public function createChatRoom($room_name, $password) {
 
         $response = array();
-
-        $urid = uniqid(''); // Generates Unique Room ID
-
-        $create_query = "INSERT INTO rooms (
-            urid, room_name, created_at) 
-            VALUES (?, ?,  now())";
-
-        $prepared_statement = $this->connection->prepare($create_query);
-
-        $prepared_statement->bind_param(
-            "ss", 
-            $urid, $room_name);
         
-        $result = $prepared_statement->execute();
-    
-        if ($result) {
+        $get_query = "SELECT * FROM rooms WHERE room_name = ?";
 
-            $response['error'] = false;
+        $prepared_statement = $this->connection->prepare($get_query);
 
-            $check_query = "SELECT * FROM rooms WHERE room_name = ?";
+        $prepared_statement->bind_param("s", $room_name);
+
+        $prepared_statement->execute();
+
+        $prepared_statement->store_result();
         
-            $prepared_statement = $this->connection->prepare($check_query);
-
-            $prepared_statement->bind_param("s", $room_name);
-
-            $room = $prepared_statement->execute();
-
-            if ($room) {
-
-                $row = $prepared_statement->get_result()->fetch_assoc();
-
-                $tmp = array();
-
-                $tmp['urid'] = $row['urid'];
-
-                $tmp['room_name'] = $row['room_name'];
-
-                $tmp['created_at'] = $row['created_at'];
-
-                $response['message'] = $tmp;
-
-            }
-
-            $prepared_statement->close();
-
-        } else {
+         if ($prepared_statement->num_rows() > 0) { 
 
             $response['error'] = true;
 
             $response['message'] = 'Failed Creating Chat Room with name ' . $room_name. '. The chat room exists';
+            
+            $prepared_statement->close();
+            
+        } else {
+
+            $urid = uniqid(''); // Generates Unique Room ID
+        
+            $encrypted_password = password_hash($password, PASSWORD_DEFAULT); // Hashes the Password
+    
+            $create_query = "INSERT INTO rooms (
+                urid, room_name, room_password, created_at) 
+                VALUES (?, ?, ?, now())";
+    
+            $prepared_statement = $this->connection->prepare($create_query);
+    
+            $prepared_statement->bind_param(
+                "sss", 
+                $urid, $room_name, $encrypted_password);
+            
+            $result = $prepared_statement->execute();
+            
+            if ($result) {
+
+                $response['error'] = false;
+    
+                $check_query = "SELECT * FROM rooms WHERE room_name = ?";
+            
+                $prepared_statement = $this->connection->prepare($check_query);
+    
+                $prepared_statement->bind_param("s", $room_name);
+    
+                $room = $prepared_statement->execute();
+    
+                if ($room) {
+    
+                    $row = $prepared_statement->get_result()->fetch_assoc();
+    
+                    $tmp = array();
+    
+                    $tmp['urid'] = $row['urid'];
+    
+                    $tmp['room_name'] = $row['room_name'];
+    
+                    $tmp['created_at'] = $row['created_at'];
+    
+                    $response['message'] = $tmp;
+    
+                }
+
+            } else {
+    
+                $response['error'] = true;
+    
+                $response['message'] = 'Failed Creating Chat Room with name ' . $room_name. '. Unknown error occured';
+            }
+            
+
+            $prepared_statement->close();
+
         }
 
         return $response;
 
-        $prepared_statement->close();
-        
     }
    
     /**
